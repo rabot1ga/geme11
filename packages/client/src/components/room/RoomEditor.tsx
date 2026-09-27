@@ -29,6 +29,7 @@ const SLOT_META: Record<RoomSlotId, { icon: string; name: string }> = {
   chair: { icon: '💺', name: 'Кресло' },
   atmosphere: { icon: '🪴', name: 'Атмосфера' },
   pet: { icon: '🐾', name: 'Питомец' },
+  character: { icon: '🧑‍💻', name: 'Персонаж' },
 };
 
 const ENTRY_NAMES: Record<string, string> = {

@@ -211,6 +211,10 @@ export function roomEntryStatus(
       if (!item) return lock('Неизвестный питомец');
       return has(item) ? { unlocked: true, hint: '' } : lock('Купи питомца в магазине 🐾');
     }
+
+    case 'character': {
+      return { unlocked: true, hint: '' };
+    }
   }
 }
 
@@ -224,6 +228,7 @@ export const ROOM_EDITABLE_SLOTS: RoomSlotId[] = [
   'chair',
   'atmosphere',
   'pet',
+  'character',
 ];
 
 export function isRoomSlotId(slot: string): slot is RoomSlotId {

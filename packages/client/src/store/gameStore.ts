@@ -145,7 +145,6 @@ interface GameState {
   startInterview: () => Promise<any>;
   answerInterview: (questionId: string, choiceIndex: number) => Promise<any>;
   finishInterview: () => Promise<any>;
-  updateRoom: (room: any) => void;
 }
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -239,10 +238,6 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
   setMoreOpen: (open) => set({ moreOpen: open }),
   clearError: () => set({ error: null }),
-  updateRoom: (room) =>
-    set((s) => ({
-      player: s.player ? { ...s.player, room: { ...(s.player.room ?? {}), ...room } } : s.player,
-    })),
 
   dropGain: (id) => set((s) => ({ gains: s.gains.filter((g) => g.id !== id) })),
 

@@ -201,7 +201,7 @@ export interface PixelManifest {
 
 // ---- Room customization (docs/design.md §12.2) ----
 
-export type RoomSlotId = 'bg' | 'window' | 'decor' | 'desk' | 'setup' | 'chair' | 'atmosphere' | 'pet';
+export type RoomSlotId = 'bg' | 'window' | 'decor' | 'desk' | 'setup' | 'chair' | 'atmosphere' | 'pet' | 'character';
 
 export type AvatarSlotId = 'hair' | 'beard' | 'top' | 'bottom' | 'accessory';
 

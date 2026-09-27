@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useGameStore } from '../store/gameStore';
-import { FlatRoom } from '../components/room/FlatRoom';
-import { FlatRoomEditor } from '../components/room/FlatRoomEditor';
-import { ScreenTitle, SectionTitle, EmptyState } from '../components/ui';
+import { useGameStore } from '../../src/store/gameStore';
+import { ModularFlatRoom } from '../components/flat/ModularFlatRoom';
+import { ModularRoomEditor } from '../components/flat/ModularRoomEditor';
+import { EmptyState, ScreenTitle, SectionTitle } from '../components/ui';
 import { Wardrobe } from '../components/room/Wardrobe';
 import { ShareCard } from '../components/room/ShareCard';
 import { haptic } from '../lib/telegram';
@@ -10,8 +10,9 @@ import { buildAvatarData, fetchPixelPack, PixelAvatarData } from '../components/
 import { PixelIdentity } from '../components/room/PixelIdentity';
 
 /**
- * «Дом» — 2D flat modular pixel-art room, room customizer, wardrobe,
- * NFT inventory, and share card.
+ * «Дом» — модульная плоская пиксельная комната разработчика (v3.0).
+ * Полное визуальное соответствие стилю room.webp и главной страницы.
+ * Кастомизация стен, мебели, сетапа, питомца, NFT-инвентарь.
  */
 export const RoomView: React.FC = () => {
   const player = useGameStore((s) => s.player);
@@ -51,8 +52,6 @@ export const RoomView: React.FC = () => {
     pixelPack && player.genetics ? buildAvatarData(pixelPack, player.genetics, player.avatar) : null;
 
   const traits = player.genetics;
-  const ready = geneticsConfig && avatarManifest && traits;
-
   const displayTraits = traits && player?.room?.wallColor ? { ...traits, wallColor: player.room.wallColor } : traits;
 
   const handleBind = async () => {
@@ -75,10 +74,10 @@ export const RoomView: React.FC = () => {
         Дом
       </ScreenTitle>
 
-      {/* Flat Modular Pixel-Art Room */}
-      <FlatRoom player={player} />
+      {/* 1. Flat Modular Pixel Room */}
+      <ModularFlatRoom player={player} />
 
-      {/* Room Modular Customizer */}
+      {/* 2. Interactive Room Customizer */}
       <div className="card">
         <button
           onClick={() => {
@@ -89,8 +88,8 @@ export const RoomView: React.FC = () => {
           className="w-full flex items-center justify-between touch-target"
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-ink-100">
-            <span aria-hidden="true">🛋️</span>
-            Обустроить комнату
+            <span aria-hidden="true">🛋</span>
+            Настроить комнату и интерьер
           </span>
           <span aria-hidden="true" className={`accordion-chevron ${editorOpen ? 'is-open' : ''}`}>
             ▾
@@ -99,14 +98,14 @@ export const RoomView: React.FC = () => {
         <div className={`accordion-body ${editorOpen ? 'open' : ''}`}>
           <div className="accordion-inner">
             <div className="pt-3">
-              <FlatRoomEditor player={player} />
+              <ModularRoomEditor player={player} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Wardrobe */}
-      {ready && (
+      {/* 3. Wardrobe (Гардероб) */}
+      {avatarManifest && traits && (
         <div className="card">
           <button
             onClick={() => {
@@ -142,7 +141,7 @@ export const RoomView: React.FC = () => {
         </div>
       )}
 
-      {/* Wallet */}
+      {/* 4. Solana Wallet */}
       <div className="card">
         <SectionTitle className="mb-3">Кошелёк Solana</SectionTitle>
         {player.walletAddress ? (
@@ -171,15 +170,15 @@ export const RoomView: React.FC = () => {
         </p>
       </div>
 
-      {/* NFT inventory */}
+      {/* 5. NFT Inventory */}
       <div className="card">
-        <SectionTitle className="mb-3">NFT-предметы (мок)</SectionTitle>
+        <SectionTitle className="mb-3">NFT-предметы</SectionTitle>
         {(inventory ?? []).length === 0 ? (
           <EmptyState
             bare
             emoji="📦"
             title="NFT пока нет"
-            hint="Загляни в магазин (Herman Miller, MacBook…) или открой лутбоксы на Claim-сайте."
+            hint="Загляни в магазин (Herman Miller, MacBook…) или открой лутбокс в Vault."
           />
         ) : (
           <div className="space-y-1.5">
@@ -198,9 +197,9 @@ export const RoomView: React.FC = () => {
         )}
       </div>
 
-      {/* Cross-collection synergies */}
+      {/* 6. Cross-collection synergies */}
       <div className="card">
-        <SectionTitle className="mb-3">Cross-collection (мок-детект)</SectionTitle>
+        <SectionTitle className="mb-3">Cross-collection (бонусы)</SectionTitle>
         <div className="space-y-2">
           {crossCollections.map((c: any) => {
             const held = (heldCollections ?? []).includes(c.collectionId);
@@ -233,8 +232,8 @@ export const RoomView: React.FC = () => {
         </div>
       </div>
 
-      {/* Share card */}
-      {ready && <ShareCard traits={displayTraits} player={player} />}
+      {/* 7. Share card */}
+      {displayTraits && <ShareCard traits={displayTraits} player={player} />}
     </div>
   );
 };

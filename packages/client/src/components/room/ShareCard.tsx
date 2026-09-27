@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GeneticTraits } from '@itsim/shared';
 import { haptic } from '../../lib/telegram';
-import { drawIsoRoom } from '../iso/canvas';
+import { drawFlatRoom } from '../flat/drawFlatRoom';
 
 /**
  * Share card — DESIGN.md section 5.
@@ -89,7 +89,7 @@ async function renderCanvas(
   ctx.fillRect(0, 0, W, H);
 
   // 2. The player's actual room, drawn by the same engine as the app
-  await drawIsoRoom(ctx, player, { x: 40, y: 40, w: W - 80, h: Math.round(H * 0.62) });
+  await drawFlatRoom(ctx, player, { x: 40, y: 40, w: W - 80, h: Math.round(H * 0.62) });
 
   // 3. Stats card
   ctx.fillStyle = 'rgba(10, 14, 24, 0.88)';

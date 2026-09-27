@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { haptic } from '../lib/telegram';
-import { FlatOffice } from '../components/room/FlatOffice';
+import { ModularFlatOffice } from '../components/flat/ModularFlatOffice';
 import { officeMoodOf } from '../components/room/OfficeRenderer';
 import { EmojiToken, ScreenTitle, SectionTitle, EmptyState } from '../components/ui';
 
 /**
- * Office (docs/design.md §11) — flat 2D pixel-art office matching the main page
- * and room aesthetic. Opened from Career while employed.
+ * «Офис» — плоский модульный пиксель-арт опенспейс команды (v3.0).
+ * Полностью убрана 3D-изометрия. Соответствует стилю room.webp и главной страницы.
  */
 
 const SIZE_LABELS: Record<string, string> = {
@@ -37,7 +37,6 @@ export const OfficeView: React.FC = () => {
   const error = useGameStore((s) => s.error);
   const clearError = useGameStore((s) => s.clearError);
 
-  const [officeManifest, setOfficeManifest] = useState<any>(null);
   const [npcs, setNpcs] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -48,7 +47,6 @@ export const OfficeView: React.FC = () => {
       fetch('/api/content/companies').then((r) => r.json()),
     ])
       .then(([n, c]) => {
-        setOfficeManifest(true);
         setNpcs(n.npcs ?? []);
         setCompanies(c.companies ?? []);
       })
@@ -96,7 +94,6 @@ export const OfficeView: React.FC = () => {
     relationships: player.relationships ?? {},
   };
   const mood = officeMoodOf(input);
-  const ready = officeManifest;
 
   const canAct = (energy: number) => (player.energy ?? 0) >= energy;
 
@@ -127,17 +124,12 @@ export const OfficeView: React.FC = () => {
         </div>
       )}
 
-      {/* Office render */}
-      {ready ? (
-        <FlatOffice
-          company={company}
-          mood={mood}
-          player={player}
-          onTalkNpc={() => performAction('networking')}
-        />
-      ) : (
-        <div className="w-full aspect-[4/3] rounded-xl bg-ink-900 animate-pulse border border-ink-800" />
-      )}
+      {/* Flat Modular Pixel Art Office */}
+      <ModularFlatOffice
+        player={player}
+        company={company}
+        mood={mood}
+      />
 
       {/* Team */}
       <div>
@@ -147,8 +139,6 @@ export const OfficeView: React.FC = () => {
             const meta = npcs.find((n: any) => n.id === t.npcId);
             const value = player.relationships?.[t.npcId] ?? 0;
             const rel = relationMeta(value);
-            // Same source as FriendsView: avatar field in npcs.json (.png),
-            // we serve the optimised .webp in /art/npcs/.
             const portrait = meta?.avatar ? `/art/npcs/${String(meta.avatar).replace(/\.png$/i, '.webp')}` : null;
             return (
               <div key={t.npcId} className="card card-sm text-center" title={meta?.description ?? ''}>
@@ -180,7 +170,7 @@ export const OfficeView: React.FC = () => {
         <p className="subtle mt-2">Отношения качаются событиями и нетворкингом</p>
       </div>
 
-      {/* Office actions — the same work API, office flavor */}
+      {/* Office actions */}
       <div>
         <SectionTitle className="mb-2">Рабочий день</SectionTitle>
         <div className="grid grid-cols-3 gap-2">

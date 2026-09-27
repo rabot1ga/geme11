@@ -2217,30 +2217,6 @@ select {
   animation: numPop 0.24s ease-out;
 }
 
-@keyframes subtleBreathing {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-.animate-subtle-breathing {
-  animation: subtleBreathing 3s ease-in-out infinite;
-}
-
-@keyframes petIdle {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
-}
-.animate-pet-idle {
-  animation: petIdle 4s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
   .animate-pop-in,
