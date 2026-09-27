@@ -1,0 +1,23 @@
+{
+  "seasonId": "season_1",
+  "seasonNumber": 1,
+  "title": "Сезон 1: Рождение Легенды",
+  "durationDays": 60,
+  "activePlayerTopPercent": 20,
+  "totalSupply": 1000000000,
+  "seasonRewardPool": 10000000,
+  "tokenSymbol": "$ITSIM",
+  "burnPercent": 60,
+  "liquidityPercent": 40,
+  "baseLootboxPrice": 500,
+  "minLootboxPrice": 50,
+  "maxLootboxPrice": 5000,
+  "pityTimerLimit": 15,
+  "maxLootboxesPerDay": 5,
+  "isPoolLocked": true,
+  "dropRates": {
+    "common": 0.70,
+    "rare": 0.25,
+    "legendary": 0.05
+  }
+}

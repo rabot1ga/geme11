@@ -1,0 +1,175 @@
+import { SkillLevel, PlayerState } from '../types';
+
+/**
+ * Skill system — sections 5.2, 5.3, 7
+ */
+
+/**
+ * XP required to reach the next level — quadratic curve (section 5.2)
+ * Formula: 8 * (1 + level/20)^2
+ */
+export function xpToNext(level: number): number {
+  return Math.round(8 * Math.pow(1 + level / 20, 2));
+}
+
+/**
+ * Apply XP to a skill with motivation multiplier
+ */
+export function applyXp(
+  skill: SkillLevel,
+  rawXp: number,
+  motivation: number
+): SkillLevel {
+  const mult = 0.7 + 0.006 * motivation; // 0.7 .. 1.3
+  let xp = skill.xp + Math.round(rawXp * mult);
+  let level = skill.level;
+
+  while (level < 100 && xp >= xpToNext(level)) {
+    xp -= xpToNext(level);
+    level++;
+  }
+
+  return { level, xp };
+}
+
+/**
+ * Apply XP to a soft skill.
+ *
+ * Soft skills saturate: people, unlike syntax, do not improve linearly with
+ * the number of meetings. Above `saturatesAt` the XP inflow is throttled by
+ * `softXpDamping` — this is what stops «grind 5000 meetups» from being a
+ * legitimate route through the late-game career gates.
+ */
+export function applySoftXp(
+  skill: SkillLevel,
+  rawXp: number,
+  opts: { saturatesAt?: number; damping?: number } = {}
+): SkillLevel {
+  const saturatesAt = opts.saturatesAt ?? 30;
+  const damping = opts.damping ?? 0.5;
+  const xpGain = skill.level >= saturatesAt ? Math.max(1, Math.round(rawXp * damping)) : rawXp;
+
+  let xp = skill.xp + xpGain;
+  let level = skill.level;
+
+  while (level < 100 && xp >= xpToNext(level)) {
+    xp -= xpToNext(level);
+    level++;
+  }
+
+  return { level, xp };
+}
+
+/**
+ * Motivation multiplier for XP gain
+ */
+export function motivationMult(motivation: number): number {
+  return 0.7 + 0.006 * motivation;
+}
+
+/**
+ * Check if player has access to a skill (parent gating — section 7.2)
+ */
+export function canLearnSkill(
+  p: PlayerState,
+  skillDef: { parent?: string; unlockAt?: Record<string, number> }
+): boolean {
+  if (!skillDef.parent && !skillDef.unlockAt) return true;
+
+  if (skillDef.unlockAt) {
+    for (const [parentId, requiredLevel] of Object.entries(skillDef.unlockAt)) {
+      const parentLevel = p.skills[parentId]?.level ?? 0;
+      if (parentLevel < requiredLevel) return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Check if player qualifies for a perk.
+ * `branchOf` maps skillId → branch (from content); without it the
+ * legacy id-prefix heuristic is used as a fallback.
+ */
+export function canUnlockPerk(
+  p: PlayerState,
+  requires: Record<string, number>,
+  branchOf?: Record<string, string>
+): boolean {
+  for (const [key, requiredLevel] of Object.entries(requires)) {
+    // Check if it's a branch requirement like "frontendBranch"
+    if (key.endsWith('Branch')) {
+      const branchName = key.replace('Branch', '');
+      let total = 0;
+      if (branchOf) {
+        total = Object.entries(p.skills)
+          .filter(([skillId]) => branchOf[skillId] === branchName)
+          .reduce((sum, [, v]) => sum + v.level, 0);
+      } else {
+        // Legacy fallback: sum skill levels whose ids match the branch prefix
+        total = Object.entries(p.skills)
+          .filter(([skillId]) => skillId.startsWith(branchName) || skillId === branchName)
+          .reduce((sum, [, v]) => sum + v.level, 0);
+      }
+      if (total < requiredLevel) return false;
+    } else if (key === 'communication' || key === 'leadership' || key === 'english' ||
+               key === 'stress_resistance' || key === 'time_management' || key === 'public_speaking') {
+      const softLevel = p.softSkills[key]?.level ?? 0;
+      if (softLevel < requiredLevel) return false;
+    } else {
+      // It's a specific skill
+      const skillLevel = p.skills[key]?.level ?? 0;
+      if (skillLevel < requiredLevel) return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Calculate total skill levels across all skills
+ */
+export function totalSkillLevels(p: PlayerState): number {
+  return Object.values(p.skills).reduce((sum, s) => sum + s.level, 0);
+}
+
+/**
+ * Highest single skill level — career depth. Late grades gate on this, not on
+ * the sum: spreading 3 XP over 30 skills is not a senior engineer.
+ */
+export function maxSkillLevel(p: PlayerState): number {
+  let best = 0;
+  for (const skill of Object.values(p.skills)) {
+    if (skill.level > best) best = skill.level;
+  }
+  return best;
+}
+
+/**
+ * Level of the player's main skill (falls back to the highest one).
+ */
+export function mainSkillLevel(p: PlayerState): number {
+  if (p.mainSkillId) return p.skills[p.mainSkillId]?.level ?? 0;
+  return maxSkillLevel(p);
+}
+
+/**
+ * Calculate total XP earned across all skills
+ */
+export function totalSkillXp(p: PlayerState): number {
+  let totalXp = 0;
+  for (const skill of Object.values(p.skills)) {
+    totalXp += skill.xp;
+    // Add XP spent on leveling up
+    for (let i = 0; i < skill.level; i++) {
+      totalXp += xpToNext(i);
+    }
+  }
+  return totalXp;
+}
+
+/**
+ * Get skill from player state, returning a default if not found
+ */
+export function getSkill(p: PlayerState, skillId: string): SkillLevel {
+  return p.skills[skillId] ?? { level: 0, xp: 0 };
+}
