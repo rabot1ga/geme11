@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { haptic } from '../lib/telegram';
-import { IsoOffice } from '../components/iso/IsoOffice';
+import { FlatOffice } from '../components/room/FlatOffice';
 import { officeMoodOf } from '../components/room/OfficeRenderer';
-import { EmojiToken, ScreenTitle, SectionTitle, EmptyState, Skeleton } from '../components/ui';
+import { EmojiToken, ScreenTitle, SectionTitle, EmptyState } from '../components/ui';
 
 /**
- * Office (docs/design.md §11) — a skin over the same work actions, rendered with
- * the layer engine. Opened from Career while employed; no tab button.
+ * Office (docs/design.md §11) — flat 2D pixel-art office matching the main page
+ * and room aesthetic. Opened from Career while employed.
  */
 
 const SIZE_LABELS: Record<string, string> = {
@@ -129,19 +129,14 @@ export const OfficeView: React.FC = () => {
 
       {/* Office render */}
       {ready ? (
-        <IsoOffice
-          office={{
-            companyId: company?.id ?? player.job?.companyId,
-            companySize: company?.size,
-            grade: player.job?.grade,
-            teamSize: TEAM.length,
-            mood,
-            seed: company?.id ?? player.job?.companyId,
-          }}
+        <FlatOffice
+          company={company}
+          mood={mood}
           player={player}
+          onTalkNpc={() => performAction('networking')}
         />
       ) : (
-        <Skeleton className="aspect-square" />
+        <div className="w-full aspect-[4/3] rounded-xl bg-ink-900 animate-pulse border border-ink-800" />
       )}
 
       {/* Team */}

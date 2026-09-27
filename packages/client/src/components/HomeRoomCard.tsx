@@ -1,7 +1,8 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
+import { FlatRoom } from './room/FlatRoom';
 
-/** Home preview of the room; tapping the header opens the full editor. */
+/** Home preview of the player's flat modular room; tapping opens the full room editor. */
 export const HomeRoomCard: React.FC = () => {
   const player = useGameStore((state) => state.player);
   const setView = useGameStore((state) => state.setView);
@@ -18,13 +19,14 @@ export const HomeRoomCard: React.FC = () => {
           Обустроить →
         </button>
       </div>
-      <img
-        src="/art/story-v1/room.webp"
-        alt="Иллюстрация комнаты разработчика: стол, компьютер, кресло и окно в ночной город"
-        width={640}
-        height={480}
-      />
-      <span className="room-card-caption">Эскиз комнаты · твои предметы и расстановка — в редакторе</span>
+
+      <div onClick={() => setView('room')} className="cursor-pointer">
+        <FlatRoom player={player} />
+      </div>
+
+      <span className="room-card-caption">
+        Твоя комната · нажми на комнату или «Обустроить», чтобы настроить мебель и технику
+      </span>
     </section>
   );
 };

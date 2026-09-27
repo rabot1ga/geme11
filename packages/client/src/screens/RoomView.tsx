@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { buildRoomComposition } from '../components/room/RoomRenderer';
-import { IsoRoom } from '../components/iso/IsoRoom';
-import { IsoRoomEditor } from '../components/iso/IsoRoomEditor';
-import { entryName } from '../components/room/RoomEditor';
-import { EmptyState, ScreenTitle, SectionTitle } from '../components/ui';
+import { FlatRoom } from '../components/room/FlatRoom';
+import { FlatRoomEditor } from '../components/room/FlatRoomEditor';
+import { ScreenTitle, SectionTitle, EmptyState } from '../components/ui';
 import { Wardrobe } from '../components/room/Wardrobe';
 import { ShareCard } from '../components/room/ShareCard';
 import { haptic } from '../lib/telegram';
@@ -12,8 +10,8 @@ import { buildAvatarData, fetchPixelPack, PixelAvatarData } from '../components/
 import { PixelIdentity } from '../components/room/PixelIdentity';
 
 /**
- * «Дом» — procedural room (DESIGN.md), NFT inventory (mock Solana),
- * cross-collection synergies and the share card.
+ * «Дом» — 2D flat modular pixel-art room, room customizer, wardrobe,
+ * NFT inventory, and share card.
  */
 export const RoomView: React.FC = () => {
   const player = useGameStore((s) => s.player);
@@ -24,12 +22,11 @@ export const RoomView: React.FC = () => {
 
   const [geneticsConfig, setGeneticsConfig] = useState<any>(null);
   const [avatarManifest, setAvatarManifest] = useState<any>(null);
-  const [roomManifest, setRoomManifest] = useState<any>(null);
   const [crossCollections, setCrossCollections] = useState<any[]>([]);
   const [pixelPack, setPixelPack] = useState<Awaited<ReturnType<typeof fetchPixelPack>>>(null);
   const [walletInput, setWalletInput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(true);
   const [wardrobeOpen, setWardrobeOpen] = useState(false);
 
   useEffect(() => {
@@ -42,7 +39,6 @@ export const RoomView: React.FC = () => {
       .then(([g, l, c, pixel]) => {
         setGeneticsConfig(g.genetics);
         setAvatarManifest(l.avatar);
-        setRoomManifest(l.room);
         setCrossCollections(c.crossCollections?.collections ?? []);
         setPixelPack(pixel);
       })
@@ -55,26 +51,8 @@ export const RoomView: React.FC = () => {
     pixelPack && player.genetics ? buildAvatarData(pixelPack, player.genetics, player.avatar) : null;
 
   const traits = player.genetics;
-  const ready = geneticsConfig && avatarManifest && roomManifest && traits;
+  const ready = geneticsConfig && avatarManifest && traits;
 
-  const crossLayers = (crossCollections ?? [])
-    .filter((c: any) => (heldCollections ?? []).includes(c.collectionId))
-    .map((c: any) => ({
-      layerId: c.layerId,
-      slotId: c.nftType === 'decor' ? 'decor' : c.nftType === 'pet' ? 'pet' : 'decor',
-    }));
-
-  const composition = ready
-    ? buildRoomComposition({
-        traits,
-        housingLevel: player.housingLevel ?? 0,
-        items: player.items ?? [],
-        crossLayers,
-        custom: player.room,
-      })
-    : null;
-
-  // A repaint overrides the genetic wall tint everywhere (room + share card)
   const displayTraits = traits && player?.room?.wallColor ? { ...traits, wallColor: player.room.wallColor } : traits;
 
   const handleBind = async () => {
@@ -97,52 +75,35 @@ export const RoomView: React.FC = () => {
         Дом
       </ScreenTitle>
 
-      {/* Room */}
-      <IsoRoom player={player} />
+      {/* Flat Modular Pixel-Art Room */}
+      <FlatRoom player={player} />
 
-      {/* Pet status */}
-      {ready && composition?.pet && composition.pet !== 'pet_none' && (
-        <div className="card card-sm flex items-center gap-2.5">
-          <span className="text-lg" aria-hidden="true">
-            🐾
+      {/* Room Modular Customizer */}
+      <div className="card">
+        <button
+          onClick={() => {
+            haptic('selection');
+            setEditorOpen((v) => !v);
+          }}
+          aria-expanded={editorOpen}
+          className="w-full flex items-center justify-between touch-target"
+        >
+          <span className="flex items-center gap-2 text-sm font-semibold text-ink-100">
+            <span aria-hidden="true">🛋️</span>
+            Обустроить комнату
           </span>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-ink-100 truncate">{entryName(composition.pet)}</p>
-            <p className={`text-xs ${player.petFedToday ? 'text-moss-300' : 'text-ochre-300'}`}>
-              {player.petFedToday ? 'сыт и счастлив до завтра' : 'голоден — покорми во вкладке «День»'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Room editor */}
-      {ready && (
-        <div className="card">
-          <button
-            onClick={() => {
-              haptic('selection');
-              setEditorOpen((v) => !v);
-            }}
-            aria-expanded={editorOpen}
-            className="w-full flex items-center justify-between touch-target"
-          >
-            <span className="flex items-center gap-2 text-sm font-semibold text-ink-100">
-              <span aria-hidden="true">🛋</span>
-              Настроить комнату
-            </span>
-            <span aria-hidden="true" className={`accordion-chevron ${editorOpen ? 'is-open' : ''}`}>
-              ▾
-            </span>
-          </button>
-          <div className={`accordion-body ${editorOpen ? 'open' : ''}`}>
-            <div className="accordion-inner">
-              <div className="pt-3">
-                <IsoRoomEditor player={player} />
-              </div>
+          <span aria-hidden="true" className={`accordion-chevron ${editorOpen ? 'is-open' : ''}`}>
+            ▾
+          </span>
+        </button>
+        <div className={`accordion-body ${editorOpen ? 'open' : ''}`}>
+          <div className="accordion-inner">
+            <div className="pt-3">
+              <FlatRoomEditor player={player} />
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Wardrobe */}
       {ready && (
@@ -206,8 +167,7 @@ export const RoomView: React.FC = () => {
           </div>
         )}
         <p className="subtle mt-3">
-          Генетика персонажа детерминированно привязана к кошельку (DESIGN.md 3.1). В проде — через Solana Wallet
-          Adapter.
+          Генетика персонажа детерминированно привязана к кошельку. В проде — через Solana Wallet Adapter.
         </p>
       </div>
 
@@ -219,7 +179,7 @@ export const RoomView: React.FC = () => {
             bare
             emoji="📦"
             title="NFT пока нет"
-            hint="Загляни в магазин (Herman Miller, MacBook…) — покупка смонтится в кошелёк."
+            hint="Загляни в магазин (Herman Miller, MacBook…) или открой лутбоксы на Claim-сайте."
           />
         ) : (
           <div className="space-y-1.5">
@@ -271,9 +231,6 @@ export const RoomView: React.FC = () => {
             );
           })}
         </div>
-        <p className="subtle mt-3">
-          В проде владение коллекциями читается on-chain (Helius RPC). Здесь — мок для теста бонусов.
-        </p>
       </div>
 
       {/* Share card */}
