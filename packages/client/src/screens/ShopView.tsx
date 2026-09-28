@@ -13,7 +13,7 @@ import {
 import { Spinner, EmptyState, ScreenTitle, SectionTitle } from '../components/ui';
 import { NavLinks } from '../components/NavLinks';
 import { StarsShop } from '../components/StarsShop';
-import { IsoIcon, spriteForItem, HOUSING_SPRITE } from '../components/iso/IsoIcon';
+import { FlatItemIcon, FlatHousingIcon } from '../components/flat/FlatItemIcon';
 
 type HousingDef = {
   level: number;
@@ -220,21 +220,8 @@ export const ShopView: React.FC = () => {
             const affordable = canAfford(item.price);
             return (
               <article key={item.id} className="card shop-product" aria-label={item.name}>
-                <span className="shop-product-art">
-                  {item.type === 'headphones' ? (
-                    <img src="/art/equipment/headphones.svg" alt="" width={48} height={48} />
-                  ) : item.id === 'mechanical_keyboard' ? (
-                    <img src="/art/equipment/keyboard.svg" alt="" width={64} height={40} />
-                  ) : item.type === 'pc' || item.type === 'chair' ? (
-                    <img
-                      src={`/art/equipment/${item.type === 'pc' ? 'laptop' : 'chair'}.svg`}
-                      alt=""
-                      width={64}
-                      height={64}
-                    />
-                  ) : (
-                    <IsoIcon sprite={spriteForItem(item.id, item.type)} size={48} />
-                  )}
+                <span className="shop-product-art flex items-center justify-center">
+                  <FlatItemIcon itemId={item.id} itemType={item.type} size={48} />
                 </span>
                 <div className="shop-product-copy">
                   <h3>{item.name}</h3>
@@ -298,8 +285,8 @@ export const ShopView: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="plate w-10 h-10 shrink-0 p-0.5">
-                    <IsoIcon sprite={HOUSING_SPRITE[h.level] ?? 'bed'} size={34} />
+                  <span className="shrink-0">
+                    <FlatHousingIcon level={h.level} size={36} />
                   </span>
                   <div className="min-w-0">
                     <span className={`text-sm ${current ? 'text-moss-300 font-medium' : 'text-ink-200'}`}>
