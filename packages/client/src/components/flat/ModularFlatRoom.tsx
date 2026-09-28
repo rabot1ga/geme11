@@ -58,68 +58,115 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
         />
       )}
 
-      {/* 3. Dynamic Window Atmosphere / View Overlay */}
+      {/* 3. Dynamic Window Atmosphere / View */}
+      {/* 3.1 Window glass pane texture */}
+      <div className="absolute right-[2.5%] top-[16.2%] w-[15.5%] h-[43.1%] overflow-hidden pointer-events-none rounded-[1px] z-[5]">
+        <img
+          src={`/art/room/windows/${composition.window}.webp`}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = `/art/room-modular/windows/${composition.window}.png`;
+          }}
+          alt="Вид из окна"
+          className="w-full h-full object-cover"
+          style={{ imageRendering: 'pixelated' }}
+          draggable={false}
+        />
+      </div>
+
+      {/* 3.2 Dynamic Ambient Light Beam cast from window across the room */}
       {composition.window === 'window_sunset' && (
         <div
-          className="absolute right-[3%] top-[8%] w-[19%] h-[55%] pointer-events-none mix-blend-screen opacity-60 rounded-sm"
+          className="absolute right-0 top-0 w-2/3 h-full pointer-events-none mix-blend-color-dodge opacity-35 z-[6]"
           style={{
-            background: 'linear-gradient(180deg, rgba(255,100,50,0.6) 0%, rgba(200,50,120,0.4) 60%, rgba(50,20,80,0.7) 100%)',
+            background: 'linear-gradient(225deg, rgba(249,115,22,0.85) 0%, rgba(217,119,6,0.3) 40%, transparent 70%)',
           }}
         />
       )}
       {composition.window === 'window_day' && (
         <div
-          className="absolute right-[3%] top-[8%] w-[19%] h-[55%] pointer-events-none mix-blend-overlay opacity-60 rounded-sm"
+          className="absolute right-0 top-0 w-2/3 h-full pointer-events-none mix-blend-screen opacity-25 z-[6]"
           style={{
-            background: 'linear-gradient(180deg, #70b4ff 0%, #bde0fe 60%, #e0f2fe 100%)',
+            background: 'linear-gradient(225deg, rgba(254,240,138,0.8) 0%, rgba(253,224,71,0.2) 40%, transparent 70%)',
           }}
         />
       )}
       {composition.window === 'window_rain' && (
         <div
-          className="absolute right-[3%] top-[8%] w-[19%] h-[55%] pointer-events-none mix-blend-screen opacity-50 rounded-sm overflow-hidden"
+          className="absolute right-0 top-0 w-2/3 h-full pointer-events-none mix-blend-overlay opacity-30 z-[6]"
           style={{
-            background: 'linear-gradient(180deg, rgba(20,40,70,0.8) 0%, rgba(10,80,120,0.6) 100%)',
+            background: 'linear-gradient(225deg, rgba(168,85,247,0.7) 0%, rgba(6,182,212,0.25) 40%, transparent 70%)',
           }}
-        >
-          <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#60a5fa_1px,transparent_1px)] [background-size:6px_12px] animate-pulse" />
-        </div>
+        />
+      )}
+      {composition.window === 'window_blinds' && (
+        <div
+          className="absolute right-0 top-0 w-2/3 h-full pointer-events-none mix-blend-soft-light opacity-30 z-[6]"
+          style={{
+            background: 'repeating-linear-gradient(180deg, transparent 0px, transparent 8px, rgba(0,0,0,0.6) 8px, rgba(0,0,0,0.6) 12px)',
+          }}
+        />
+      )}
+      {composition.window === 'window_night' && (
+        <div
+          className="absolute right-0 top-0 w-2/3 h-full pointer-events-none mix-blend-screen opacity-20 z-[6]"
+          style={{
+            background: 'linear-gradient(225deg, rgba(56,189,248,0.5) 0%, rgba(37,99,235,0.15) 40%, transparent 70%)',
+          }}
+        />
       )}
 
-      {/* 4. Wall Decor (Neon Sign / Whiteboard) */}
+      {/* 4. Wall Decor (Neon Sign / Whiteboard / Bookshelf / Garland) */}
       {composition.decor === 'decor_neon' && (
-        <div className="absolute left-[38%] top-[18%] px-2.5 py-1 rounded bg-black/60 border border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)] flex items-center gap-1.5 animate-pulse">
-          <span className="font-mono font-bold text-xs text-emerald-300 tracking-wider">&lt;/&gt; CODE</span>
+        <div className="absolute left-[33%] top-[14%] z-[7] px-2.5 py-1 rounded bg-black/75 border border-cyan-400 shadow-[0_0_18px_rgba(34,211,238,0.9),inset_0_0_8px_rgba(34,211,238,0.4)] flex items-center gap-1.5 animate-pulse">
+          <span className="font-mono font-bold text-xs text-cyan-300 tracking-widest drop-shadow-[0_0_8px_rgba(34,211,238,1)]">&lt;/&gt; CODE</span>
         </div>
       )}
       {composition.decor === 'decor_whiteboard' && (
-        <div className="absolute left-[34%] top-[16%] w-[14%] h-[16%] bg-[#f3f4f6] rounded-[2px] border border-amber-950/60 shadow-md p-1 flex flex-col justify-between">
-          <div className="flex gap-0.5">
-            <span className="w-1.5 h-1.5 bg-yellow-400 rounded-2xs" />
-            <span className="w-1.5 h-1.5 bg-pink-400 rounded-2xs" />
-            <span className="w-1.5 h-1.5 bg-blue-400 rounded-2xs" />
+        <div className="absolute left-[30%] top-[12%] w-[16%] h-[18%] bg-[#f8fafc] rounded-[2px] border-2 border-[#78350f] shadow-lg p-1 flex flex-col justify-between z-[7] select-none">
+          <div className="flex justify-between items-center border-b border-ink-300 pb-0.5">
+            <span className="text-[6px] font-bold font-mono text-ink-800">KANBAN #42</span>
+            <span className="text-[5px] text-emerald-600 font-bold">● SPRINT</span>
           </div>
-          <div className="space-y-0.5">
-            <div className="h-0.5 bg-ink-600 rounded-full w-full" />
-            <div className="h-0.5 bg-ink-400 rounded-full w-4/5" />
+          <div className="grid grid-cols-3 gap-0.5 flex-1 pt-0.5">
+            <div className="bg-amber-100 rounded-[1px] p-0.5 space-y-0.5">
+              <div className="h-0.5 bg-amber-400 rounded-2xs w-full" />
+              <div className="h-0.5 bg-amber-300 rounded-2xs w-3/4" />
+            </div>
+            <div className="bg-blue-100 rounded-[1px] p-0.5 space-y-0.5">
+              <div className="h-0.5 bg-blue-400 rounded-2xs w-full" />
+              <div className="h-0.5 bg-blue-300 rounded-2xs w-2/3" />
+            </div>
+            <div className="bg-emerald-100 rounded-[1px] p-0.5 space-y-0.5">
+              <div className="h-0.5 bg-emerald-400 rounded-2xs w-full" />
+              <div className="h-0.5 bg-emerald-300 rounded-2xs w-full" />
+            </div>
           </div>
+          <div className="text-[5px] text-ink-500 font-mono text-right">Done: 100%</div>
         </div>
       )}
       {composition.decor === 'decor_garland' && (
-        <div className="absolute left-[5%] top-[10%] right-[25%] flex justify-between pointer-events-none">
-          {['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#eab308'].map((col, i) => (
-            <span
-              key={i}
-              className="w-1.5 h-1.5 rounded-full shadow-[0_0_6px_currentColor] animate-ping"
-              style={{ backgroundColor: col, color: col, animationDuration: `${1.2 + (i % 3) * 0.4}s` }}
-            />
+        <div className="absolute left-[4%] top-[6%] right-[22%] flex justify-between pointer-events-none z-[8]">
+          {['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#eab308', '#06b6d4', '#f97316'].map((col, i) => (
+            <div key={i} className="flex flex-col items-center">
+              <div className="w-[1px] h-1.5 bg-ink-600/80" />
+              <span
+                className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] animate-pulse"
+                style={{ backgroundColor: col, color: col, animationDuration: `${0.8 + (i % 4) * 0.3}s` }}
+              />
+            </div>
           ))}
         </div>
       )}
+      {composition.decor === 'decor_bookshelf' && (
+        <div className="absolute left-[54%] top-[14%] px-2 py-1 rounded bg-black/80 border border-emerald-500/70 shadow-[0_0_12px_rgba(16,185,129,0.5)] flex items-center gap-1.5 z-[7]">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399] animate-ping" />
+          <span className="font-mono text-[9px] text-emerald-300">NODE : LIVE</span>
+        </div>
+      )}
 
-      {/* 5. Chair Style Variant (when customized or high grade) */}
+      {/* 5. Chair Style Variant (when room is empty / character stepped away) */}
       {composition.chair === 'chair_gaming' && !composition.showCharacter && (
-        <div className="absolute left-[34%] bottom-[16%] w-[22%] pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)]">
+        <div className="absolute left-[34%] bottom-[16%] w-[22%] pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)] z-[8]">
           <img
             src="/iso/chair_gaming.png"
             alt="Геймерское кресло"
@@ -128,19 +175,19 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
         </div>
       )}
       {composition.chair === 'chair_herman_miller' && !composition.showCharacter && (
-        <div className="absolute left-[36%] bottom-[18%] px-2 py-0.5 rounded bg-black/60 border border-sky-400 text-[10px] text-sky-200 font-mono shadow-md">
+        <div className="absolute left-[36%] bottom-[18%] px-2 py-0.5 rounded bg-black/60 border border-sky-400 text-[10px] text-sky-200 font-mono shadow-md z-[8]">
           Aeron Mesh
         </div>
       )}
       {composition.chair === 'chair_throne' && !composition.showCharacter && (
-        <div className="absolute left-[36%] bottom-[18%] px-2 py-0.5 rounded bg-amber-900/80 border border-amber-300 text-[10px] text-amber-200 font-mono shadow-lg flex items-center gap-1">
+        <div className="absolute left-[36%] bottom-[18%] px-2 py-0.5 rounded bg-amber-900/80 border border-amber-300 text-[10px] text-amber-200 font-mono shadow-lg flex items-center gap-1 z-[8]">
           <span>👑</span> CTO Throne
         </div>
       )}
 
       {/* 6. Hardware & Monitor Setup Variant Overlays */}
       {composition.setup === 'setup_ultrawide' && (
-        <div className="absolute left-[13%] top-[34%] w-[21%] h-[15%] rounded-[2px] bg-sky-950/90 border border-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.7)] p-1 flex flex-col justify-between pointer-events-none">
+        <div className="absolute left-[13%] top-[34%] w-[21%] h-[15%] rounded-[2px] bg-sky-950/90 border border-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.7)] p-1 flex flex-col justify-between pointer-events-none z-[9]">
           <div className="text-[7px] font-mono text-sky-300 leading-none overflow-hidden space-y-0.5">
             <div className="text-emerald-400">const server = fastify();</div>
             <div className="text-cyan-300">await server.listen();</div>
@@ -152,24 +199,23 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
         </div>
       )}
       {composition.setup === 'setup_macbook' && (
-        <div className="absolute left-[32%] top-[41%] w-[9%] h-[8%] rounded-[1px] bg-slate-900 border border-slate-400 shadow-md p-0.5 flex flex-col justify-center items-center pointer-events-none">
+        <div className="absolute left-[32%] top-[41%] w-[9%] h-[8%] rounded-[1px] bg-slate-900 border border-slate-400 shadow-md p-0.5 flex flex-col justify-center items-center pointer-events-none z-[9]">
           <span className="text-[6px] text-slate-300 font-mono"> M3 Max</span>
         </div>
       )}
 
-      {/* 7. Developer Character ("Персонаж в комнате") */}
+      {/* 7. Developer Character at Workstation ("Персонаж в комнате") */}
       {composition.showCharacter && (
-        <div className="absolute left-[29%] bottom-[12%] w-[26%] pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.85)] z-10 transition-transform">
-          <img
-            src="/art/room/character/char_dev_sitting.webp"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/art/room/character/char_dev_sitting.png';
-            }}
-            alt="Персонаж за работой"
-            className="w-full h-auto object-contain animate-fade-in"
-            draggable={false}
-          />
-        </div>
+        <img
+          src="/art/room/character/char_sitting_full.webp"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = '/art/room-modular/character/char_sitting_full.webp';
+          }}
+          alt="Персонаж за работой"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10 select-none animate-fade-in"
+          style={{ imageRendering: 'pixelated' }}
+          draggable={false}
+        />
       )}
 
       {/* 8. Pet In The Room */}

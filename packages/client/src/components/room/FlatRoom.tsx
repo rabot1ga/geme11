@@ -149,14 +149,15 @@ export const FlatRoom: React.FC<FlatRoomProps> = ({
       {/* 1. Custom Window View Overlay */}
       {windowSprite && (
         <div
-          className="absolute right-[4%] top-[4%] w-[33%] h-[68%] pointer-events-none cursor-pointer transition-transform hover:scale-[1.02]"
+          className="absolute right-[2.5%] top-[16.2%] w-[15.5%] h-[43.1%] overflow-hidden pointer-events-none rounded-[1px] z-[5]"
           onClick={() => onItemClick?.('window')}
           title="Окно"
         >
           <img
             src={windowSprite}
             alt="Вид из окна"
-            className="w-full h-full object-contain filter drop-shadow-md"
+            className="w-full h-full object-cover"
+            style={{ imageRendering: 'pixelated' }}
             draggable={false}
           />
         </div>
@@ -261,18 +262,13 @@ export const FlatRoom: React.FC<FlatRoomProps> = ({
 
       {/* 6. Character Sitting at the Desk */}
       {showCharacter && (
-        <div
-          className="absolute left-[24%] bottom-[2%] w-[48%] cursor-pointer hover:brightness-105 transition-all z-20"
-          onClick={() => onItemClick?.('character')}
-          title="Ты за работой"
-        >
-          <img
-            src="/art/room-modular/character/char_sitting.png"
-            alt="Разработчик за столом"
-            className="w-full h-auto drop-shadow-2xl animate-subtle-breathing"
-            draggable={false}
-          />
-        </div>
+        <img
+          src="/art/room/character/char_sitting_full.webp"
+          alt="Разработчик за столом"
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-20"
+          style={{ imageRendering: 'pixelated' }}
+          draggable={false}
+        />
       )}
 
       {/* 7. Pet */}

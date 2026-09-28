@@ -684,17 +684,18 @@ function applyAction(
       const slot = params?.slot as string | undefined;
       const entryId = (params?.entryId as string | null | undefined) ?? null;
       const isoSlot = slot === 'paint' || slot === 'floor';
-      if (!slot || (!isoSlot && slot !== 'wallColor' && !isRoomSlotId(slot))) {
-        return { error: 'Неизвестный слот комнаты' };
+      if (!slot) {
+        return { error: 'Не указан слот комнаты' };
       }
       if (!state.room) state.room = { slots: {} };
+      if (!state.room.slots) state.room.slots = {};
 
       // null = back to automatic
-      if (entryId === null) {
+      if (entryId === null || entryId === '') {
         if (slot === 'wallColor') delete state.room.wallColor;
         else if (slot === 'paint') delete state.room.paint;
         else if (slot === 'floor') delete state.room.floor;
-        else delete state.room.slots[slot];
+        else delete (state.room.slots as any)[slot];
         delta.room = state.room;
         return { message: '🎨 Вернули как было (авто)', delta };
       }
@@ -720,23 +721,100 @@ function applyAction(
       }
 
       if (slot === 'wallColor') {
-        const palette = (content.genetics?.wallPalette ?? []) as any[];
-        if (!palette.some((p) => p.id === entryId)) return { error: 'Такого цвета нет в палитре' };
         state.room.wallColor = entryId;
         delta.room = state.room;
-        const name = palette.find((p) => p.id === entryId)?.name ?? entryId;
-        return { message: `🎨 Стены перекрашены: ${name} (−${REPAINT_COST} ₽ за банку краски)`, delta };
+        return { message: '🎨 Стены перекрашены', delta };
       }
 
-      const manifestSlot = (content.roomLayers?.slots ?? []).find((s: any) => s.id === slot);
-      if (!manifestSlot?.entries?.some((e: any) => e.id === entryId)) {
-        return { error: 'Такого предмета нет в этом слоте' };
+      // Modular Flat Room Slots:
+      if (slot === 'character' || slot === 'showCharacter') {
+        state.room.slots.character = entryId;
+        delta.room = state.room;
+        return {
+          message: entryId === 'hidden' || entryId === 'false' ? '🛋 Режим интерьера' : '🧑‍💻 Персонаж за работой',
+          delta,
+        };
       }
-      const status = roomEntryStatus(buildRoomUnlockContext(state, heldCollections), slot, entryId);
-      if (!status.unlocked) return { error: `🔒 ${status.hint}` };
-      state.room.slots[slot] = entryId;
-      delta.room = state.room;
-      return { message: '🎨 Комната обновлена', delta };
+
+      if (slot === 'window') {
+        state.room.slots.window = entryId;
+        delta.room = state.room;
+        return { message: '🪟 Вид из окна обновлен', delta };
+      }
+
+      if (slot === 'decor') {
+        state.room.slots.decor = entryId;
+        delta.room = state.room;
+        return { message: '🖼️ Декор обновлен', delta };
+      }
+
+      if (slot === 'bg' || slot === 'background') {
+        const numMatch = entryId.match(/\d+/);
+        const reqLevel = numMatch ? parseInt(numMatch[0], 10) : 0;
+        if (reqLevel > (state.housingLevel ?? 0)) {
+          return { error: 'Это жильё ещё не открыто' };
+        }
+        state.room.slots.bg = entryId;
+        delta.room = state.room;
+        return { message: '🏠 Жильё выбрано', delta };
+      }
+
+      if (slot === 'pet') {
+        if (entryId !== 'pet_none' && !state.items?.includes(entryId)) {
+          return { error: 'Сначала купи этого питомца в магазине 🐾' };
+        }
+        state.room.slots.pet = entryId;
+        delta.room = state.room;
+        return { message: entryId === 'pet_none' ? '🚫 Питомец спрятан' : '🐾 Питомец в комнате', delta };
+      }
+
+      if (slot === 'chair') {
+        if (entryId === 'chair_herman_miller' && !state.items?.includes('herman_miller')) {
+          return { error: 'Купи Herman Miller в магазине' };
+        }
+        if (entryId === 'chair_gaming' && !state.items?.includes('gaming_chair')) {
+          return { error: 'Купи геймерское кресло в магазине' };
+        }
+        if (entryId === 'chair_throne' && state.grade !== 'teamlead' && state.grade !== 'cto') {
+          return { error: 'Трон доступен только с грейда Teamlead/CTO' };
+        }
+        state.room.slots.chair = entryId;
+        delta.room = state.room;
+        return { message: '💺 Кресло изменено', delta };
+      }
+
+      if (slot === 'setup') {
+        if (entryId === 'setup_macbook' && !state.items?.includes('macbook')) {
+          return { error: 'Купи MacBook в магазине' };
+        }
+        if (entryId === 'setup_gaming' && !state.items?.includes('gaming_pc')) {
+          return { error: 'Купи мощный ПК в магазине' };
+        }
+        state.room.slots.setup = entryId;
+        delta.room = state.room;
+        return { message: '💻 Сетап обновлен', delta };
+      }
+
+      if (slot === 'atmosphere') {
+        if (entryId === 'atmo_coffee' && !state.items?.includes('coffee_maker')) {
+          return { error: 'Купи кофемашину в магазине' };
+        }
+        if (entryId === 'atmo_plant' && !state.items?.includes('desk_plant') && (state.housingLevel ?? 0) < 1) {
+          return { error: 'Купи растение в магазине' };
+        }
+        state.room.slots.atmosphere = entryId;
+        delta.room = state.room;
+        return { message: '🌿 Атмосфера обновлена', delta };
+      }
+
+      // Fallback for manifest slots or valid RoomSlotId
+      if (isRoomSlotId(slot)) {
+        state.room.slots[slot] = entryId;
+        delta.room = state.room;
+        return { message: '🎨 Комната обновлена', delta };
+      }
+
+      return { error: 'Неизвестный слот комнаты' };
     }
 
     case 'customize_avatar': {

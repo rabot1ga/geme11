@@ -49,15 +49,25 @@ export async function drawFlatRoom(
     ctx.restore();
   }
 
+  // 2.5 Draw Window
+  try {
+    const winImg = await loadImage(`/art/room/windows/${comp.window}.webp`);
+    ctx.drawImage(
+      winImg,
+      Math.round(box.x + box.w * 0.819),
+      Math.round(box.y + box.h * 0.162),
+      Math.round(box.w * 0.155),
+      Math.round(box.h * 0.431)
+    );
+  } catch {
+    // default window in bg
+  }
+
   // 3. Draw Sitting Character (if enabled)
   if (comp.showCharacter) {
     try {
-      const charImg = await loadImage('/art/room/character/char_dev_sitting.webp');
-      const charW = Math.round(box.w * 0.26);
-      const charH = Math.round(charW * (charImg.height / charImg.width));
-      const charX = Math.round(box.x + box.w * 0.29);
-      const charY = Math.round(box.y + box.h * 0.88 - charH);
-      ctx.drawImage(charImg, charX, charY, charW, charH);
+      const charImg = await loadImage('/art/room/character/char_sitting_full.webp');
+      ctx.drawImage(charImg, box.x, box.y, box.w, box.h);
     } catch (e) {
       // ignore
     }

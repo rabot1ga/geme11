@@ -18,6 +18,7 @@ import {
 
 export const ModularRoomEditor: React.FC<{ player: PlayerState }> = ({ player }) => {
   const performAction = useGameStore((s) => s.performAction);
+  const updateRoom = useGameStore((s) => s.updateRoom);
   const currentComposition = buildFlatRoomComposition(player);
 
   const [activeTab, setActiveTab] = useState<
@@ -29,11 +30,18 @@ export const ModularRoomEditor: React.FC<{ player: PlayerState }> = ({ player })
 
   const handleSelectSlot = async (slot: string, entryId: string | null) => {
     haptic('selection');
+    // Optimistic instant client update
+    const prevSlots = player.room?.slots ?? {};
+    const newSlots = { ...prevSlots, [slot]: entryId };
+    updateRoom({ slots: newSlots });
     await performAction('customize_room', { slot, entryId });
   };
 
   const handleSelectWallColor = async (colorHex: string) => {
     haptic('selection');
+    // Optimistic instant client update
+    const wallColor = colorHex === 'transparent' ? undefined : colorHex;
+    updateRoom({ wallColor });
     await performAction('customize_room', {
       slot: 'wallColor',
       entryId: colorHex === 'transparent' ? null : colorHex,

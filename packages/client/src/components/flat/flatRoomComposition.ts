@@ -66,6 +66,7 @@ export const DECOR_OPTIONS: SlotOption[] = [
   { id: 'decor_whiteboard', name: 'Маркерная доска Kanban', emoji: '📋' },
   { id: 'decor_bookshelf', name: 'Стеллаж с сервером', emoji: '📚' },
   { id: 'decor_garland', name: 'Уютная гирлянда', emoji: '✨' },
+  { id: 'decor_none', name: 'Чистая стена', emoji: '🧹' },
 ];
 
 export const PET_OPTIONS: SlotOption[] = [
@@ -141,7 +142,7 @@ export function buildFlatRoomComposition(player: PlayerState): FlatRoomCompositi
     atmosphere: custom?.slots?.atmosphere || defaultAtmo,
     decor: custom?.slots?.decor || defaultDecor,
     pet: custom?.slots?.pet !== undefined ? (custom.slots.pet === 'pet_none' ? null : custom.slots.pet) : defaultPet,
-    showCharacter: custom?.slots?.character !== 'hidden',
+    showCharacter: custom?.slots?.character !== 'hidden' && custom?.slots?.showCharacter !== 'false',
   };
 
   return composition;
