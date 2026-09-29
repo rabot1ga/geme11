@@ -1,0 +1,679 @@
+[
+  {
+    "id": "dorm",
+    "name": "Общага",
+    "type": "housing",
+    "price": 5000,
+    "description": "Комната на троих. Сосед играет в CS до утра.",
+    "effects": {},
+    "icon": "dorm.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "cheap_pc",
+    "name": "Бюджетный ПК",
+    "type": "pc",
+    "price": 30000,
+    "description": "Ноутбук за 30к. Excel открывает, но IDE — уже на пределе.",
+    "effects": {
+      "speedBonus": 0.1,
+      "xpBonus": 0.0
+    },
+    "icon": "cheap_pc.png",
+    "layerId": "setup_laptop",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "gaming_pc",
+    "name": "Игровой ПК",
+    "type": "pc",
+    "price": 80000,
+    "description": "RTX 4060. Для работы, конечно.",
+    "effects": {
+      "speedBonus": 0.2,
+      "xpBonus": 0.05
+    },
+    "icon": "gaming_pc.png",
+    "layerId": "setup_gaming",
+    "nft": true,
+    "rarity": "rare",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "macbook",
+    "name": "MacBook Pro",
+    "type": "pc",
+    "price": 200000,
+    "description": "Статусный символ айтишника. В кофейнях узнают.",
+    "effects": {
+      "speedBonus": 0.3,
+      "xpBonus": 0.1
+    },
+    "icon": "macbook.png",
+    "layerId": "setup_macbook",
+    "nft": true,
+    "rarity": "legendary",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "office_chair",
+    "name": "Офисное кресло",
+    "type": "chair",
+    "price": 5000,
+    "description": "Купил на Авито. Скрипит, но терпимо.",
+    "effects": {
+      "energyBonus": 0
+    },
+    "icon": "office_chair.png",
+    "layerId": "chair_office",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "gaming_chair",
+    "name": "Кресло для гейминга",
+    "type": "chair",
+    "price": 15000,
+    "description": "Гоночное кресло. В нём удобно кодить и страдать.",
+    "effects": {
+      "energyBonus": 1
+    },
+    "icon": "gaming_chair.png",
+    "layerId": "chair_gaming",
+    "nft": true,
+    "rarity": "rare",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "herman_miller",
+    "name": "Herman Miller Aeron",
+    "type": "chair",
+    "price": 120000,
+    "description": "Ты купил это кресло. Спина сказала спасибо. Кошелёк — нет.",
+    "effects": {
+      "energyBonus": 2
+    },
+    "icon": "herman_miller.png",
+    "layerId": "chair_herman_miller",
+    "nft": true,
+    "rarity": "legendary",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "cheap_headphones",
+    "name": "Дешёвые наушники",
+    "type": "headphones",
+    "price": 2000,
+    "description": "Звук есть. Качество — как повезёт.",
+    "effects": {
+      "xpBonus": 0.05
+    },
+    "icon": "cheap_headphones.png",
+    "layerId": "acc_headphones",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "sony_headphones",
+    "name": "Sony WH-1000XM5",
+    "type": "headphones",
+    "price": 30000,
+    "description": "Шумоподавление. Ты и код — больше ничего не существует.",
+    "effects": {
+      "xpBonus": 0.15
+    },
+    "icon": "sony_headphones.png",
+    "layerId": "acc_headphones",
+    "nft": true,
+    "rarity": "rare",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "coffee_maker",
+    "name": "Кофемашина",
+    "type": "coffee",
+    "price": 25000,
+    "description": "Эспрессо, американо, латте. Кодить можно без перерыва.",
+    "effects": {
+      "energyBonus": 2,
+      "motivationBonus": 3
+    },
+    "icon": "coffee_maker.png",
+    "layerId": "atmo_coffee",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "gym_subscription",
+    "name": "Абонемент в зал",
+    "type": "other",
+    "price": 3000,
+    "description": "Теперь ты не только в коде качаешься.",
+    "effects": {
+      "energyBonus": 1,
+      "healthBonus": 2
+    },
+    "icon": "gym.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "desk_plant",
+    "name": "Кактус на стол",
+    "type": "other",
+    "price": 500,
+    "description": "Поливать раз в месяц. Переживёт твой код-ревью.",
+    "effects": {
+      "motivationBonus": 2
+    },
+    "icon": "cactus.png",
+    "layerId": "atmo_cactus",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "mechanical_keyboard",
+    "name": "Механическая клавиатура",
+    "type": "other",
+    "price": 8000,
+    "description": "CLICK CLACK CLICK. Соседи знают, что ты кодишь.",
+    "effects": {
+      "xpBonus": 0.05
+    },
+    "icon": "keyboard.png",
+    "layerId": "setup_laptop",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "study_stepik",
+    "name": "Stepik / Coursera курс",
+    "type": "course",
+    "price": 2000,
+    "description": "Онлайн-курс с сертификатом. В компаниях любят.",
+    "effects": {
+      "xpBonus": 0.0
+    },
+    "icon": "stepik.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "study_course",
+    "name": "Платный курс",
+    "type": "course",
+    "price": 15000,
+    "description": "Полноценный курс с ментором. Дорого, но эффективно.",
+    "effects": {
+      "xpBonus": 0.0
+    },
+    "icon": "course.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "study_advanced_course",
+    "name": "Продвинутый курс",
+    "type": "course",
+    "price": 60000,
+    "description": "Для тех, кто хочет стать сеньором вчера.",
+    "effects": {
+      "xpBonus": 0.0
+    },
+    "icon": "advanced_course.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "study_mentor",
+    "name": "Личный ментор",
+    "type": "course",
+    "price": 120000,
+    "description": "Один на один с профи. Дорого, но результат гарантирован.",
+    "effects": {
+      "xpBonus": 0.0
+    },
+    "icon": "mentor.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "mining_gpu",
+    "name": "Майнинг-видеокарта",
+    "type": "other",
+    "price": 50000,
+    "description": "Одна карта в старом корпусе. Начало подпольной империи.",
+    "effects": {
+      "hashrate": 10
+    },
+    "icon": "gpu.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "mining_rig",
+    "name": "Майнинг-ферма",
+    "type": "other",
+    "price": 250000,
+    "description": "Риг из 6 карт. Соседи жалуются на шум и счета за свет.",
+    "effects": {
+      "hashrate": 60
+    },
+    "icon": "rig.png",
+    "nft": true,
+    "rarity": "rare",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "mining_asic",
+    "name": "ASIC-майнер",
+    "type": "other",
+    "price": 800000,
+    "description": "Промышленный ASIC. Только биткоин, только хардкор, только шум вентиляторов.",
+    "effects": {
+      "hashrate": 250
+    },
+    "icon": "asic.png",
+    "nft": true,
+    "rarity": "legendary",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "solar_panel",
+    "name": "Солнечная панель",
+    "type": "other",
+    "price": 50000,
+    "description": "Электричество для фермы дешевле на 50%. И совесть чище.",
+    "effects": {
+      "electricitySave": 0.5
+    },
+    "icon": "solar.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_cat",
+    "name": "Кот Барсик",
+    "type": "pet",
+    "price": 20000,
+    "description": "Мурчит на клавиатуре и сбрасывает кружки. +2 мотивации в день.",
+    "effects": {
+      "motivationBonus": 2
+    },
+    "icon": "pet_cat.png",
+    "layerId": "pet_cat",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_dog",
+    "name": "Корги",
+    "type": "pet",
+    "price": 25000,
+    "description": "Вечный оптимист с короткими лапами. +2 мотивации, +1 здоровье в день.",
+    "effects": {
+      "motivationBonus": 2,
+      "healthBonus": 1
+    },
+    "icon": "pet_dog.png",
+    "layerId": "pet_dog",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_cactus",
+    "name": "Кактус Пикачу",
+    "type": "pet",
+    "price": 5000,
+    "description": "Не требует ничего. Иногда колется. +1 мотивации в день.",
+    "effects": {
+      "motivationBonus": 1
+    },
+    "icon": "pet_cactus.png",
+    "layerId": "pet_cactus",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_robo",
+    "name": "Робот-пылесос",
+    "type": "pet",
+    "price": 15000,
+    "description": "Убирает крошки и боится ковра. +1 мотивации в день.",
+    "effects": {
+      "motivationBonus": 1
+    },
+    "icon": "pet_robo.png",
+    "layerId": "pet_robo",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_spider",
+    "name": "Паук Пафнутий",
+    "type": "pet",
+    "price": 8000,
+    "description": "Живёт в углу. Ловит мух. Не платит аренду. +1 мотивации в день.",
+    "effects": {
+      "motivationBonus": 1
+    },
+    "icon": "pet_spider.png",
+    "layerId": "pet_spider",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_bulldog",
+    "name": "Бульдог в костюме",
+    "type": "pet",
+    "price": 40000,
+    "description": "Солидный пёс. Уважает тебя и гостей. +3 мотивации в день.",
+    "effects": {
+      "motivationBonus": 3
+    },
+    "icon": "pet_bulldog.png",
+    "layerId": "pet_bulldog",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_parrot",
+    "name": "Попугай Кеша",
+    "type": "pet",
+    "price": 22000,
+    "description": "Повторяет твои ругательства на дейли-стендапах. +2 мотивации в день.",
+    "effects": {
+      "motivationBonus": 2
+    },
+    "icon": "pet_parrot.png",
+    "layerId": "pet_parrot",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_hamster",
+    "name": "Хомяк Байт",
+    "type": "pet",
+    "price": 12000,
+    "description": "Копит семечки так же дисциплинированно, как ты — сбережения. +1 мотивации в день.",
+    "effects": {
+      "motivationBonus": 1
+    },
+    "icon": "pet_hamster.png",
+    "layerId": "pet_hamster",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_fish",
+    "name": "Рыбка Гит",
+    "type": "pet",
+    "price": 8000,
+    "description": "Молчаливый ревьюер. Плавает туда-сюда и не спамит в чат. +1 мотивации в день.",
+    "effects": {
+      "motivationBonus": 1
+    },
+    "icon": "pet_fish.png",
+    "layerId": "pet_fish",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_bow",
+    "name": "🎀 Бант для питомца",
+    "type": "pet",
+    "price": 3000,
+    "description": "Питомец становится на 200% милее. Чистая косметика — зато какая!",
+    "effects": {},
+    "icon": "pet_bow.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_glasses",
+    "name": "🕶️ Очки для питомца",
+    "type": "pet",
+    "price": 5000,
+    "description": "Твой питомец теперь тоже code reviewer. Косметика.",
+    "effects": {},
+    "icon": "pet_glasses.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "pet_crown",
+    "name": "👑 Корона для питомца",
+    "type": "pet",
+    "price": 15000,
+    "description": "Признай очевидное: дома главный — он. Косметика.",
+    "effects": {},
+    "icon": "pet_crown.png",
+    "rarity": "common",
+    "tradeable": false,
+    "nftEligible": false,
+    "honestModeEffect": "none"
+  },
+  {
+    "id": "cap_legendary_01",
+    "name": "Кепка сеньора",
+    "type": "nft",
+    "price": 0,
+    "description": "Легендарная кепка ведущего разработчика. Открывает дорогу на борд.",
+    "effects": {
+      "energyBonus": 1,
+      "reputationMult": 1.05
+    },
+    "icon": "cap_legendary.png",
+    "nft": true,
+    "rarity": "legendary",
+    "slot": "headwear",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_cap"
+  },
+  {
+    "id": "hoodie_cyber",
+    "name": "Худи киберпанка",
+    "type": "nft",
+    "price": 0,
+    "description": "Тёмное худи с неоновой вышивкой localhost. +1 к энергии и вечный вайб ночного кодинга.",
+    "effects": {
+      "energyBonus": 1,
+      "motivationBonus": 5
+    },
+    "icon": "hoodie_cyber.png",
+    "nft": true,
+    "rarity": "legendary",
+    "slot": "top",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "top_hoodie_localhost"
+  },
+  {
+    "id": "vr_headset_meta",
+    "name": "VR-гарнитура разработчика",
+    "type": "nft",
+    "price": 0,
+    "description": "Погружение в метаверс и 3D-графику. Даёт +10% к получаемому XP.",
+    "effects": {
+      "energyBonus": 1,
+      "xpBonus": 0.1
+    },
+    "icon": "vr_headset.png",
+    "nft": true,
+    "rarity": "rare",
+    "slot": "accessory",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_vr_headset"
+  },
+  {
+    "id": "glasses_nerd",
+    "name": "Очки архитектора",
+    "type": "nft",
+    "price": 0,
+    "description": "Очки в роговой оправе. Добавляют +5 к солидности и репутации на созвонах.",
+    "effects": {
+      "reputationBonus": 5
+    },
+    "icon": "glasses_nerd.png",
+    "nft": true,
+    "rarity": "rare",
+    "slot": "accessory",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_glasses"
+  },
+  {
+    "id": "beanie_dev",
+    "name": "Бини девопса",
+    "type": "nft",
+    "price": 0,
+    "description": "Тёплая шапка для серверов в холодном ДЦ. Бережёт здоровье.",
+    "effects": {
+      "healthBonus": 2
+    },
+    "icon": "beanie_dev.png",
+    "nft": true,
+    "rarity": "common",
+    "slot": "headwear",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_beanie"
+  },
+  {
+    "id": "suit_corp",
+    "name": "Корпоративное худи топ-менеджера",
+    "type": "nft",
+    "price": 0,
+    "description": "Идеально сидящий костюм для совещаний совета директоров. +10 репутации.",
+    "effects": {
+      "reputationBonus": 10,
+      "energyBonus": 1
+    },
+    "icon": "suit_corp.png",
+    "nft": true,
+    "rarity": "legendary",
+    "slot": "top",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "top_hoodie_corp"
+  },
+  {
+    "id": "medal_veteran",
+    "name": "Медаль первопроходца",
+    "type": "nft",
+    "price": 0,
+    "description": "Выдаётся за особые заслуги в первом сезоне. Сияет на груди.",
+    "effects": {
+      "reputationBonus": 15
+    },
+    "icon": "medal_veteran.png",
+    "nft": true,
+    "rarity": "legendary",
+    "slot": "accessory",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "season_rewards",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_medal"
+  },
+  {
+    "id": "acc_headphones_pro",
+    "name": "Наушники с активным шумодавом",
+    "type": "nft",
+    "price": 0,
+    "description": "Никаких криков менеджеров и звуков кофемашины. Полная концентрация.",
+    "effects": {
+      "motivationBonus": 3,
+      "energyCostChance": 0.2
+    },
+    "icon": "headphones_pro.png",
+    "nft": true,
+    "rarity": "rare",
+    "slot": "accessory",
+    "tradeable": true,
+    "nftEligible": true,
+    "lootboxSource": "senior_box",
+    "honestModeEffect": "cosmeticOnly",
+    "layerId": "acc_headphones"
+  }
+]
