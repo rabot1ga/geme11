@@ -1,18 +1,15 @@
-# Пиксельный аватар — реализация ТЗ «Процедурная генерация пиксельных персонажей»
+# Archived: legacy pixel-avatar pipeline (not a game feature)
 
-> Хром интерфейса (карточки, кнопки, эмодзи) описан в
-> [design-system.md](design-system.md). Здесь — только пиксельный мир:
-> персонаж 32×32 и пайплайн его генерации. Пиксельные иконки 12×12 остались
-> в нижней навигации и внутри пиксель-арт-поверхностей.
+> **Product decision — do not reverse without explicit product-owner approval:** generated pixel avatar (32×32) and pixel identity panel are removed from the game UI. They must not be restored to the client, profile, wardrobe, room, API, or share card. See the decision summary in [SPEC.md](../SPEC.md) and [design.md](design.md).
+>
+> This page remains only as a technical reference for the offline legacy generator (`tools/pixelgen`) and its tests. It does not describe current game behavior, a product requirement, or a roadmap item. The runtime API and client renderer have been removed; generated artifacts are not needed to run the game.
 
-Документ — приложение к [SPEC.md](../SPEC.md) и [DESIGN.md](DESIGN.md). Он **не заменяет** исходное ТЗ,
-а фиксирует решения по местам, где ТЗ молчало или противоречило себе, и описывает, как пайплайн живёт
-в этом репозитории (`packages/shared` + `tools/pixelgen` + `packages/content/pixel/`).
+The archived offline pipeline is `packages/shared` + `tools/pixelgen` + `packages/content/pixel/`. Pixel-style room/office art and small UI icons are separate and remain in the product.
 
 ```
 authored (rows)  →  compile  →  components.json  →  validate  →  generate  →  render  →  PNG/spritesheet/manifest
       ↑ master prompt (AI)                                          ↓
-   packages/content/pixel/components.source.json          игра (canvas в клиенте)
+   packages/content/pixel/components.source.json          offline artifacts only
 ```
 
 ---
@@ -133,26 +130,19 @@ PRNG и выбор — **те же функции, что у игровой ге
 | `packages/content/pixel/components.json`                              | канон: `pixels` + `format` + `sourceChecksum` (результат `compile`)    | да     |
 | `packages/content/pixel/generator_config.json`                        | категории/варианты + цветовые схемы                                    | да     |
 | `artifacts/pixel/**`                                                  | PNG персонажей, `spritesheet.png`, `manifest.json`, `gallery.html`     | нет    |
-| `packages/shared/src/engine/pixelArt.ts`                              | движок: схемы, валидация, рендер, комбинации                           | да     |
+| `packages/shared/src/engine/pixelArt.ts`                              | legacy engine, только для офлайн CLI/тестов (не game runtime)         | да     |
 | `tools/pixelgen/src/buildSource.ts`                                   | авторский набор: геометрия 30 компонентов → `components.source.json`   | да     |
 | `tools/pixelgen/src/index.ts`                                         | CLI: compile/validate/generate/render/repro/prompt/import/export/audit | да     |
 | `tools/pixelgen/src/png.ts`                                           | свой PNG-кодек (8-bit RGBA) + ASCII-превью                             | да     |
-| `packages/client/src/components/room/{PixelAvatar,PixelIdentity}.tsx` | canvas-рендер и панель идентичности в игре                             | да     |
-
-Движок — в `shared`, потому что его же использует клиент (рендер аватара в рантайме) и сервер (валидация
-контента на старте, `GET /api/content/pixel`).
+The pixel-avatar client components, runtime pack loading and API endpoint were removed. This tooling is not a runtime dependency.
 
 ---
 
-## 3. Как это встраивается в игру
+## 3. Product integration status: intentionally none
 
-- **Тот же seed-путь.** `deriveGenetics(state)` уже считает генотип из кошелька; к нему добавляется
-  `pixelComposition`: категории → id компонентов. Игрок получает «свой» пиксельный аватар детерминированно.
-- **Клиент** рисует аватар на `<canvas>` через `renderPixelArt()` (общий код с генератором, 1 источник правды
-  вместо второго рендерера). SVG-слои остаются для комнаты.
-- **Сервер** в `loadContent()` валидирует `pixel/components.json` (структурно) и отдаёт `/api/content/pixel`;
-  при невалидном контенте — старт падает, как и с остальными конфигами.
-- **Витрина** (`artifacts/pixel/gallery.html` + спрайтшит) — артефакты сборки, в прод не участвуют.
+This pipeline is **not integrated into the game**. Do not add its former seed composition, browser canvas renderer, runtime content loading, `/api/content/pixel` endpoint, profile identity panel, or share-card avatar back. The engine/CLI described below are offline tooling only; this section is retained to prevent the archived design from being mistaken for product scope.
+
+The game's room/office illustrations and layered SVG wardrobe are separate supported systems. Small pixel-style UI icons are also unaffected.
 
 ---
 
@@ -163,8 +153,8 @@ PRNG и выбор — **те же функции, что у игровой ге
 | 1. Прототип: канвас, layout, рендерер с `mirror`/`excludes`, по 1 компоненту на категорию | §13 | ✅ `packages/shared/src/engine/pixelArt.ts`                                                                              |
 | 2. MVP-набор 30 компонентов + валидация + перекраска                                      | §13 | ✅ 30 компонентов (3/5/4/6/5/4/3), `compile` → `audit`, 4 цветовые схемы                                                 |
 | 3. Массовая генерация: `generator_config.json`, комбинации, партия, `manifest.json`       | §13 | ✅ `generate --mode enumerate\|seeded`, пространство 86 400, `manifest.json` с чексуммами                                |
-| 4. Экспорт: PNG, spritesheet, галерея, воспроизведение по seed, API                       | §13 | ✅ `png.ts` (свой кодек), `--sheet`, `gallery.html`, `repro`, `GET /api/content/pixel`, canvas-рендер в комнате          |
-| 5. Расширение: доп. компоненты, анимация, ракурсы, HSL-реколор                            | §13 | ⏳ `hslShift()` и флаг `extended` есть; `pixelgen import` принимает новые компоненты из AI-вывода; анимации/ракурсов нет |
+| 4. Офлайн-экспорт: PNG, spritesheet, галерея и воспроизведение по seed                 | §13 | 🗃️ CLI-only legacy tooling; no runtime API or in-game renderer (product integration was removed) |
+| 5. Расширение legacy CLI: дополнительные компоненты/анимация/ракурсы                       | §13 | 🚫 Не продуктовая задача и не roadmap; legacy tooling может иметь возможности только для офлайн-экспериментов |
 
 ## 5. Команды
 
@@ -196,10 +186,9 @@ npm run pixelgen:demo                        # 48 персонажей + спр�
 | `seedKind` в `manifest.json`                    | `types`, `buildManifest`                | enumerate-«seed» — это индекс, а не seed: `repro` обязан знать, каким путём пересобирать комбинацию                                                                                                |
 | `reconcileConfig` в `compile`                   | `tools/pixelgen`                        | компонент, которого нет в `generator_config`, невозможно вытянуть; `import` нового варианта из AI-вывода сам дописывает его в категории и чистит устаревшие веса                                   |
 | побайтовый PNG-кодек                            | `tools/pixelgen/src/png.ts`             | без зависимостей; генератор читает собственный вывод обратно (`--no-verify-png` отключает) и `repro` сравнивает именно пиксели, а не хэш файла                                                     |
-| `GET /api/content/pixel`                        | `packages/server/src/routes/content.ts` | клиент рендерит из канонического JSON тем же движком, что и CLI: препеченные спрайты в рантайме не нужны                                                                                           |
-| `PixelAvatar` + `PixelIdentity`                 | `packages/client/src/components/room/`  | аватар в комнате и панель «что взялось из генотипа, а что из seed»                                                                                                                                 |
+| бывший runtime endpoint и UI                | удалены                               | `/api/content/pixel`, `PixelAvatar`, `PixelIdentity` и клиентский pack-fetch удалены по продуктовому решению; не восстанавливать |
 | `buildPixelComposition` / `TRAIT_COMPONENT_MAP` | `pixelArt.ts`                           | 10 причесок генотипа → 6 пиксельных вариантов; если у категории ровно один вариант — берётся он, иначе слот отдаётся seed-вытягиванию                                                              |
-| `validatePixelArtFile` на старте сервера        | `contentService.ts`                     | сломанный пак аватаров не может уехать в прод: пиксель вне канваса = ошибка                                                                                                                        |
+| `validatePixelArtFile` в legacy CLI             | `tools/pixelgen`                        | проверка офлайн-пакета; сервер и runtime content loader больше его не загружают                                                       |
 
 Регрессия, которую поймала пайплайн-проверка (и её стоит помнить при правках авторского формата):
 `rows` — это **строки-смещения от anchor**, пустая строка обязана остаться в массиве. Первая

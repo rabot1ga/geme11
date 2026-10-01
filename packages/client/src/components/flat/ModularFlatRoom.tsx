@@ -1,10 +1,15 @@
 import React from 'react';
-import { PlayerState } from '@itsim/shared';
+import { LayerManifest, PlayerState } from '@itsim/shared';
+import { findRoomPosition, normalizedRectStyle } from './roomManifest';
 import { buildFlatRoomComposition, FlatRoomComposition, HOUSING_NAMES } from './flatRoomComposition';
+import { RoomV2Stage } from './RoomV2Stage';
+
+const USE_LAYERED_ROOM_V2 = true;
 
 export interface ModularFlatRoomProps {
   player: PlayerState;
   customComposition?: FlatRoomComposition;
+  roomManifest?: LayerManifest | null;
   onClick?: () => void;
   className?: string;
 }
@@ -20,12 +25,30 @@ function petAccessory(wear?: string[]): string | null {
 export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
   player,
   customComposition,
+  roomManifest,
   onClick,
   className = '',
 }) => {
   const composition = customComposition || buildFlatRoomComposition(player);
   const housingLevel = Math.min(4, Math.max(0, player.housingLevel ?? 0));
   const petAcc = petAccessory(player.items);
+  const windowPosition = findRoomPosition(roomManifest, 'window', composition.window);
+  const petPosition = composition.pet
+    ? findRoomPosition(roomManifest, 'pet', composition.pet)
+    : null;
+
+  // Switch to the isolated 4:3 room composition. The legacy renderer remains below
+  // as a fallback while its slot geometry and share-card output are migrated.
+  if (USE_LAYERED_ROOM_V2) {
+    return (
+      <RoomV2Stage
+        player={player}
+        composition={composition}
+        onClick={onClick}
+        className={className}
+      />
+    );
+  }
 
   // Background file
   const bgFile = `/art/room/bg/${composition.bg}.webp`;
@@ -60,7 +83,10 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
 
       {/* 3. Dynamic Window Atmosphere / View */}
       {/* 3.1 Window glass pane texture */}
-      <div className="absolute right-[2.5%] top-[16.2%] w-[15.5%] h-[43.1%] overflow-hidden pointer-events-none rounded-[1px] z-[5]">
+      <div
+        className={`absolute ${windowPosition ? '' : 'right-[2.5%] top-[16.2%] w-[15.5%] h-[43.1%]'} overflow-hidden pointer-events-none rounded-[1px] z-[5]`}
+        style={normalizedRectStyle(windowPosition)}
+      >
         <img
           src={`/art/room/windows/${composition.window}.webp`}
           onError={(e) => {
@@ -204,6 +230,14 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
         </div>
       )}
 
+      {/* Ground contact shadow prevents the foreground chair from reading as airborne. */}
+      {composition.showCharacter && (
+        <div
+          aria-hidden="true"
+          className="absolute left-[63%] bottom-[1%] w-[34%] h-[4%] rounded-[50%] bg-black/45 blur-sm pointer-events-none z-[9]"
+        />
+      )}
+
       {/* 7. Developer Character at Workstation ("Персонаж в комнате") */}
       {composition.showCharacter && (
         <img
@@ -212,7 +246,7 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
             (e.currentTarget as HTMLImageElement).src = '/art/room-modular/character/char_sitting_full.webp';
           }}
           alt="Персонаж за работой"
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10 select-none animate-fade-in"
+          className="absolute inset-[4%] w-[92%] h-[92%] object-fill pointer-events-none z-10 select-none animate-fade-in"
           style={{ imageRendering: 'pixelated' }}
           draggable={false}
         />
@@ -220,7 +254,10 @@ export const ModularFlatRoom: React.FC<ModularFlatRoomProps> = ({
 
       {/* 8. Pet In The Room */}
       {composition.pet && (
-        <div className="absolute right-[22%] bottom-[12%] w-[15%] z-20 pointer-events-none animate-pet-bob">
+        <div
+          className={`absolute ${petPosition ? '' : 'right-[22%] bottom-[12%] w-[15%]'} z-20 pointer-events-none animate-pet-bob`}
+          style={normalizedRectStyle(petPosition)}
+        >
           <div className="relative">
             {/* Pet Sprite */}
             {composition.pet === 'pet_cat' ? (

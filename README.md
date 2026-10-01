@@ -94,13 +94,13 @@ it-life-simulator/
 │   ├── bot/        # Telegram-бот: long polling / webhook, команды, уведомления
 │   └── sim/        # симулятор баланса + статистика событий
 ├── tools/
-│   ├── pixelgen/                 # пайплайн пиксельных персонажей (CLI)
+│   ├── pixelgen/                 # legacy CLI для офлайн-генерации (не используется игрой)
 │   ├── generate_layer_assets.py  # генератор SVG-слоёв (комната/аватар)
 │   └── generate_office_assets.py # генератор SVG-слоёв офиса
 ├── docs/
 │   ├── design.md    # дизайн-документ клиента (§1–16 + роадмап §15, 10/10 закрыт)
 │   ├── deploy.md    # деплой, переменные окружения, вебхуки, бэкапы, GDPR
-│   └── pixel-art.md # ТЗ пиксельного пайплайна
+│   └── pixel-art.md # решение: pixel avatar/identity не входят в продукт
 ├── ci/github-actions-ci.yml  # workflow: типы + eslint + контент + тесты + симулятор + сборка
 ├── .env.example              # все переменные окружения с комментариями
 ├── SPEC.md    # техническое задание v2.0
@@ -288,7 +288,7 @@ CTO — не повышение, а `special`-гейт: экшен `cto_elect` �
 
 ---
 
-## 🎨 Визуал: слои, генетика, пиксель-арт
+## 🎨 Визуал: слои и генетика
 
 Стратегия (см. [DESIGN.md](DESIGN.md)): **комбинаторика слоёв + тинтинг + on-chain seed**.
 Никаких «готовых картинок комнат» — интерьер и персонаж собираются движком.
@@ -328,21 +328,11 @@ weighted pick по слотам. Базовые черты (глаза, прич
 команда, стол, коллеги из NPC, кофе, настроение дня) + контекстные действия.
 Рендер — `OfficeRenderer.tsx`, ассеты — `tools/generate_office_assets.py`.
 
-### Пиксельный аватар (альтернативный пайплайн)
+### Персонажи и идентичность
 
-Вместо рукотворных слоёв — **пиксельные JSON-описания**. Полное ТЗ: [docs/pixel-art.md](docs/pixel-art.md).
+Пиксельный аватар 32×32 и связанная с ним панель пиксельной идентичности **удалены и не входят в продукт**. Это окончательное продуктовое решение, а не задача в очереди; не добавляйте их обратно в UI, API, гардероб или карточки. Подробности: [docs/pixel-art.md](docs/pixel-art.md).
 
-Цепочка: `prompt → AI → components.json → валидатор → generator_config.json → рендер → PNG + manifest.json → игра`.
-
-- Канвас **32×32, анфас**; слои `face → eyes → mouth → clothing → hair → hat → accessory`,
-  каждый следующий полностью перекрывает предыдущий; прозрачность = отсутствие пикселя.
-- **30 MVP-компонентов** (3/5/4/6/5/4/3) + 4 цветовые схемы → 86 400 комбинаций.
-- Детерминизм: персонаж = `seed` + `sha256(components.json)` + `sha256(generator_config.json)`;
-  `pixelgen repro` перерисовывает партию и сверяет пиксели побайтово.
-- Совместимость — только `excludes` (капюшон ⇒ `hair_bald`); взаимные исключения запрещены.
-- Один рендерер на CLI и браузер (`shared/engine/pixelArt.ts`), апскейл — только nearest neighbour.
-- Контент отдаёт `GET /api/content/pixel`; AI-вывод идёт через `pixelgen import`
-  (пиксель вне канваса и «цвет словом» — ошибка, а не warning).
+Визуальная идентичность игры строится на существующих иллюстрациях, слоистом гардеробе и оформлении комнат/офиса. Офлайн-инструменты `pixelgen` — legacy, они не используются игровым клиентом.
 
 ### Шар-карточка
 
@@ -476,7 +466,7 @@ id навыков в вопросах, монотонность карьерно
 ### Content (`/api/content`)
 
 `manifest`, `companies`, `items`, `genetics`, `layers` (avatar+room+office),
-`npcs`, `cross-collections`, `skills`, `career-gates`, `pixel`, `side-jobs`, `perks`, `achievements`.
+`npcs`, `cross-collections`, `skills`, `career-gates`, `side-jobs`, `perks`, `achievements`.
 
 ### Leaderboard (`/api/leaderboard`)
 
@@ -552,7 +542,7 @@ id навыков в вопросах, монотонность карьерно
 | `cross_collections.json`   | NFT-синергии                                            | 3 коллекции                     |
 | `genetics.json`            | генетика внешности                                      | —                               |
 | `layers/*.json`            | манифесты слоёв                                         | avatar 36 / room 50 / office 53 |
-| `pixel/`                   | пиксельные компоненты + конфиг генератора               | 30 компонентов                  |
+| `pixel/`                   | legacy-данные офлайн `pixelgen`, не загружаются сервером | 30 компонентов (инструментальные) |
 | `monetization.json`        | каталог Telegram Stars (косметика, дни в банке, значки) | 4 товара                        |
 
 Валидация контента — часть самого пакета:
@@ -602,11 +592,11 @@ npx tsx packages/sim/src/simulate.ts --why   # что блокирует аге�
 ## 🛠️ Инструменты
 
 ```bash
-# Пиксельные персонажи
-npm run pixelgen:audit      # compile-идемпотентность + схема + структура + 64 комбинации (CI-гейт)
-npm run pixelgen:demo       # 48 персонажей → artifacts/pixel (PNG, spritesheet, gallery.html)
+# Legacy: офлайн pixelgen toolchain (не интегрировать в продукт/UI/API)
+npm run pixelgen:audit      # проверка исходных данных и CLI-генератора
+npm run pixelgen:demo       # тестовая галерея в artifacts/pixel (локально)
 npm run pixelgen:render -- face=face_angular hair=hair_manbun hat=hat_beanie   # ASCII-превью
-npm run pixelgen:prompt -- hair --count=2   # мастер-промпт для генерации новых компонентов
+npm run pixelgen:prompt -- hair --count=2   # промпт для офлайн-генератора
 
 # SVG-слои (Python, детерминированные; художник правит результат, код не трогаем)
 python3 tools/generate_layer_assets.py    # комната + аватар → packages/client/public/layers/
@@ -646,12 +636,12 @@ CI — [`ci/github-actions-ci.yml`](ci/github-actions-ci.yml) (скопируй�
 
 | Документ                                                     | О чём                                                                                                                      |
 | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| [SPEC.md](SPEC.md)                                           | ТЗ v2.0: стек, сервер-авторитет, офлайн-энергия, контент как данные, карьерные гейты, пиксельная генерация                 |
+| [SPEC.md](SPEC.md)                                           | ТЗ v2.0: стек, сервер-авторитет, офлайн-энергия, контент как данные, карьерные гейты                                         |
 | [DESIGN.md](DESIGN.md)                                       | процедурная генерация (комбинаторика + тинтинг + on-chain seed) и Solana-интеграция                                        |
 | [docs/design-system.md](docs/design-system.md)               | **дизайн-система**: палитра, типографика, компоненты, навигация (5 вкладок + «⋮»), EventCard, a11y, чек-лист нового экрана |
 | [docs/design.md](docs/design.md)                             | экраны клиента: Главная/Работа/Обучение/Отдых/Магазин + меню «⋮», комната, офис, кастомизация, ассет-лист                  |
 | [docs/iso.md](docs/iso.md)                                   | изометрический слой: проекция 2:1, библиотека спрайтов, конвейер `tools/isogen`, перекраска по ролям                       |
-| [docs/pixel-art.md](docs/pixel-art.md)                       | ТЗ пиксельного пайплайна: канвас, слои, палитры, excludes, воспроизводимость                                               |
+| [docs/pixel-art.md](docs/pixel-art.md)                       | Продуктовое решение: pixel avatar/identity удалены и не должны возвращаться                                               |
 | [docs/deploy.md](docs/deploy.md)                             | деплой: переменные окружения, systemd/nginx, вебхуки Stars, бэкапы, GDPR, чек-лист релиза                                  |
 | [docs/TODO.md](docs/TODO.md)                                 | живой to-do: что реализовано, что в процессе, что предстоит                                                                |
 | [docs/ART-BRIEF-2026-09-08.md](docs/ART-BRIEF-2026-09-08.md) | происхождение и стиль сцен `public/art/story-v1`                                                                           |
@@ -698,7 +688,7 @@ CI — [`ci/github-actions-ci.yml`](ci/github-actions-ci.yml) (скопируй�
       один зелёный CTA на экран, золото только за валюту, онбординг и «Настройки»
 - [x] Редактор комнаты, гардероб (4 слота, цены, медаль за ачивки), офис на 11 слотов
 - [x] Слойные манифесты avatar/room/office, генетика по seed'у, тинтинг
-- [x] Пиксельный пайплайн: 30 компонентов, валидатор, генератор, `repro`, браузерный рендер
+- [x] Legacy pixelgen CLI — offline-only; browser renderer and player pixel-avatar/identity UI removed (см. `docs/pixel-art.md`)
 - [x] Сезонный дроп (гирлянда + ёлка, декабрьский гейт), шар-карточка с 4 темами рамок
 - [x] TMA-полировка: MainButton, BackButton, хаптика, safe-area, спиннеры/скелетоны/пустышки
 

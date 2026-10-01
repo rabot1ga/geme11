@@ -869,6 +869,14 @@ export interface GeneticTraits {
 
 // ---- Layer manifests (HashLips-style) ----
 
+/** Normalised 0-1 rectangle within the canvas */
+export interface NormalizedRect {
+  x: number;
+  y: number;
+  width: number;
+  height?: number; // optional: if omitted, aspect ratio is preserved from the asset
+}
+
 export interface LayerEntry {
   id: string;
   file: string | null; // null = "no layer" option
@@ -876,6 +884,8 @@ export interface LayerEntry {
   rarity?: TraitRarity;
   /** Exclusions: "slotId.optionId" pairs that this entry must not be combined with */
   excludeWith?: string[];
+  /** Normalised position and size within the canvas (0-1). If omitted, slot-level position is used. */
+  position?: NormalizedRect;
 }
 
 export interface LayerSlot {
@@ -884,6 +894,8 @@ export interface LayerSlot {
   required: boolean;
   /** Slot id of the palette used to tint this layer (e.g. "wallColor") */
   tintSlot?: string;
+  /** Normalised position and size within the canvas (0-1). If omitted, slot fills the canvas. */
+  position?: NormalizedRect;
   entries: LayerEntry[];
 }
 

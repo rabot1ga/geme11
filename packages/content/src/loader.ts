@@ -39,9 +39,6 @@ import {
   MonetizationSchema,
   SeasonConfigSchema,
   type SeasonConfig,
-  PixelArtFileSchema,
-  PixelGeneratorConfigSchema,
-  validatePixelArtFile,
   GRADE_ORDER,
 } from '@itsim/shared';
 
@@ -85,9 +82,6 @@ export interface ContentBundle {
   archetypes: any;
   /** Season and Play-to-Earn configuration (ТЗ v3.0) */
   season: SeasonConfig;
-  /** Pixel-art avatar pack (docs/pixel-art.md). null = not generated yet. */
-  pixelArt: any | null;
-  pixelGeneratorConfig: any | null;
 }
 
 export interface ContentLoadResult {
@@ -206,7 +200,6 @@ export function loadContentBundle(dir: string = CONTENT_DIR): ContentLoadResult 
       isPoolLocked: true,
       dropRates: { common: 0.7, rare: 0.25, legendary: 0.05 },
     }),
-    ...loadPixelArt(dir, issues),
   };
 
   crossValidate(bundle, issues);
@@ -227,7 +220,6 @@ export function loadContentBundle(dir: string = CONTENT_DIR): ContentLoadResult 
     projects: bundle.projects?.projects?.length ?? 0,
     archetypes: bundle.archetypes?.archetypes?.length ?? 0,
     season: bundle.season ? 1 : 0,
-    pixelComponents: Object.keys(bundle.pixelArt?.components ?? {}).length,
   };
 
   return { bundle, issues, stats };
@@ -268,72 +260,6 @@ function readEventFiles(dir: string, issues: ContentIssue[]): any[] {
     all.push(...data);
   }
   return all;
-}
-
-/**
- * Pixel-art avatars are a build artifact of `npm run pixelgen:compile`, so a
- * missing pack must not brick the server — but a *present* pack must validate,
- * because the client renders from it verbatim.
- */
-function loadPixelArt(dir: string, issues: ContentIssue[]): Pick<ContentBundle, 'pixelArt' | 'pixelGeneratorConfig'> {
-  const pixelDir = join(dir, 'pixel');
-  const componentsPath = join(pixelDir, 'components.json');
-  if (!existsSync(componentsPath)) {
-    issues.push({
-      level: 'warning',
-      where: 'pixel/components.json',
-      message: 'pixel pack not found (run: npm run pixelgen:compile) — avatar falls back to SVG layers',
-    });
-    return { pixelArt: null, pixelGeneratorConfig: null };
-  }
-
-  let raw: any;
-  try {
-    raw = JSON.parse(readFileSync(componentsPath, 'utf-8'));
-  } catch (err) {
-    issues.push({ level: 'error', where: 'pixel/components.json', message: `invalid JSON: ${(err as Error).message}` });
-    return { pixelArt: null, pixelGeneratorConfig: null };
-  }
-
-  const parsed = PixelArtFileSchema.safeParse(raw);
-  if (!parsed.success) {
-    for (const issue of parsed.error.issues) {
-      issues.push({
-        level: 'error',
-        where: 'pixel/components.json',
-        message: `${issue.path.join('.')}: ${issue.message}`,
-      });
-    }
-    return { pixelArt: null, pixelGeneratorConfig: null };
-  }
-
-  let config: any = null;
-  const configPath = join(pixelDir, 'generator_config.json');
-  if (existsSync(configPath)) {
-    const parsedCfg = PixelGeneratorConfigSchema.safeParse(JSON.parse(readFileSync(configPath, 'utf-8')));
-    if (!parsedCfg.success) {
-      for (const issue of parsedCfg.error.issues) {
-        issues.push({
-          level: 'error',
-          where: 'pixel/generator_config.json',
-          message: `${issue.path.join('.')}: ${issue.message}`,
-        });
-      }
-    } else {
-      config = parsedCfg.data;
-    }
-  }
-
-  const validation = validatePixelArtFile(parsed.data, config);
-  for (const issue of validation.issues) {
-    issues.push({
-      level: issue.level === 'error' ? 'error' : 'warning',
-      where: `pixel/${issue.path}`,
-      message: issue.message,
-    });
-  }
-
-  return { pixelArt: parsed.data, pixelGeneratorConfig: config };
 }
 
 /**

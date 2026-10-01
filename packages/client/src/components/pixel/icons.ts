@@ -3,7 +3,7 @@
  *
  * Why not emoji: emoji are rendered by the OS, so the same screen looks different on
  * iOS / Android / desktop, they carry their own colour palette (which fights ours) and
- * they read as "placeholder art". The game already renders pixel rooms and pixel avatars,
+ * they read as "placeholder art". The room artwork remains pixel-styled,
  * so the interface icons are drawn on the same 12×12 grid and inherit `currentColor`.
  *
  * Grid legend: '#' solid, '+' shaded (45% alpha), '.' transparent.
