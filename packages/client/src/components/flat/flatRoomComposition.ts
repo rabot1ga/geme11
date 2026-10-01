@@ -142,7 +142,7 @@ export function buildFlatRoomComposition(player: PlayerState): FlatRoomCompositi
     atmosphere: custom?.slots?.atmosphere || defaultAtmo,
     decor: custom?.slots?.decor || defaultDecor,
     pet: custom?.slots?.pet !== undefined ? (custom.slots.pet === 'pet_none' ? null : custom.slots.pet) : defaultPet,
-    showCharacter: custom?.slots?.character !== 'hidden' && custom?.slots?.showCharacter !== 'false',
+    showCharacter: custom?.slots?.character !== 'hidden',
   };
 
   return composition;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import type { LayerManifest } from '@itsim/shared';
 import { useGameStore } from '../../src/store/gameStore';
 import { ModularFlatRoom } from '../components/flat/ModularFlatRoom';
 import { ModularRoomEditor } from '../components/flat/ModularRoomEditor';
@@ -6,8 +7,6 @@ import { EmptyState, ScreenTitle, SectionTitle } from '../components/ui';
 import { Wardrobe } from '../components/room/Wardrobe';
 import { ShareCard } from '../components/room/ShareCard';
 import { haptic } from '../lib/telegram';
-import { buildAvatarData, fetchPixelPack, PixelAvatarData } from '../components/room/pixelAvatar';
-import { PixelIdentity } from '../components/room/PixelIdentity';
 
 /**
  * «Дом» — модульная плоская пиксельная комната разработчика (v3.0).
@@ -21,10 +20,9 @@ export const RoomView: React.FC = () => {
   const inventory = useGameStore((s) => s.inventory);
   const heldCollections = useGameStore((s) => s.heldCollections);
 
-  const [geneticsConfig, setGeneticsConfig] = useState<any>(null);
   const [avatarManifest, setAvatarManifest] = useState<any>(null);
+  const [roomManifest, setRoomManifest] = useState<LayerManifest | null>(null);
   const [crossCollections, setCrossCollections] = useState<any[]>([]);
-  const [pixelPack, setPixelPack] = useState<Awaited<ReturnType<typeof fetchPixelPack>>>(null);
   const [walletInput, setWalletInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(true);
@@ -32,24 +30,18 @@ export const RoomView: React.FC = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/content/genetics').then((r) => r.json()),
       fetch('/api/content/layers').then((r) => r.json()),
       fetch('/api/content/cross-collections').then((r) => r.json()),
-      fetchPixelPack(),
     ])
-      .then(([g, l, c, pixel]) => {
-        setGeneticsConfig(g.genetics);
+      .then(([l, c]) => {
         setAvatarManifest(l.avatar);
+        setRoomManifest(l.room ?? null);
         setCrossCollections(c.crossCollections?.collections ?? []);
-        setPixelPack(pixel);
       })
       .catch(() => setError('Не удалось загрузить контент'));
   }, []);
 
   if (!player) return null;
-
-  const pixelAvatarData: PixelAvatarData | null =
-    pixelPack && player.genetics ? buildAvatarData(pixelPack, player.genetics, player.avatar) : null;
 
   const traits = player.genetics;
   const displayTraits = traits && player?.room?.wallColor ? { ...traits, wallColor: player.room.wallColor } : traits;
@@ -75,7 +67,7 @@ export const RoomView: React.FC = () => {
       </ScreenTitle>
 
       {/* 1. Flat Modular Pixel Room */}
-      <ModularFlatRoom player={player} />
+      <ModularFlatRoom player={player} roomManifest={roomManifest} />
 
       {/* 2. Interactive Room Customizer */}
       <div className="card">
@@ -132,8 +124,6 @@ export const RoomView: React.FC = () => {
           </div>
         </div>
       )}
-
-      {pixelAvatarData && pixelPack && <PixelIdentity pack={pixelPack} data={pixelAvatarData} />}
 
       {error && (
         <div role="alert" className="card card-sm">

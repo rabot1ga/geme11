@@ -508,12 +508,20 @@ export const GeneticsConfigSchema = z.object({
   decorOptions: z.array(TraitOptionSchema).min(1),
 });
 
+export const NormalizedRectSchema = z.object({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+  width: z.number().positive().max(1),
+  height: z.number().positive().max(1).optional(),
+});
+
 export const LayerEntrySchema = z.object({
   id: z.string().regex(/^[a-z0-9_]+$/),
   file: z.string().nullable(),
   weight: z.number().positive().optional(),
   rarity: z.enum(['common', 'rare', 'legendary']).optional(),
   excludeWith: z.array(z.string()).optional(),
+  position: NormalizedRectSchema.optional(),
 });
 
 export const LayerSlotSchema = z.object({
@@ -521,6 +529,7 @@ export const LayerSlotSchema = z.object({
   zOrder: z.number().int(),
   required: z.boolean().default(false),
   tintSlot: z.string().optional(),
+  position: NormalizedRectSchema.optional(),
   entries: z.array(LayerEntrySchema),
 });
 

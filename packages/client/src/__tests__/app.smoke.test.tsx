@@ -44,8 +44,6 @@ function jsonRoute(url: string): unknown {
   if (url.includes('/api/auth')) return { token: 'test-token', player };
   if (url.includes('/api/game/state')) return { state: player, player, events: [] };
   if (url.includes('/api/content/layers')) return { avatar: { slots: [] }, room: { slots: [] }, office: { slots: [] } };
-  if (url.includes('/api/content/genetics')) return { genetics: { wallPalette: [] } };
-  if (url.includes('/api/content/pixel')) return { pack: null };
   if (url.includes('/api/content/npcs')) return { npcs: [] };
   if (url.includes('/api/content/companies')) return { companies: [] };
   if (url.includes('/api/content/items')) return { items: [] };
